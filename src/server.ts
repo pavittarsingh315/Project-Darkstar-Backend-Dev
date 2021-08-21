@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express, { Express } from "express";
 import helmet from "helmet";
 import cors from "cors";
@@ -5,8 +8,6 @@ import morgan from "morgan";
 import log from "./logger";
 import database from "./database";
 import router from "./router";
-import dotenv from "dotenv";
-dotenv.config();
 
 const app: Express = express();
 

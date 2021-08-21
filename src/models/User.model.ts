@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
-import { genSalt, hash as bcryptHash } from "bcryptjs";
+import bcrypt from "bcryptjs";
 
 export interface UserInterface extends mongoose.Document {
    name: string;
-   phone: string;
+   contact: string;
    username: string;
    password: string;
    isActive: boolean;
-   banDate: Date;
+   banTill: Date | null;
    createdAt: Date;
    updatedAt: Date;
 }
@@ -19,11 +19,13 @@ const UserSchema = new mongoose.Schema(
          trim: true,
          required: true,
       },
-      phone: {
+      contact: {
          type: String,
          unique: true,
          required: true,
+         lowercase: true,
          trim: true,
+         max: [50, "Contact too long."],
       },
       username: {
          type: String,
@@ -45,8 +47,8 @@ const UserSchema = new mongoose.Schema(
          default: false,
          required: true,
       },
-      banDate: {
-         type: Date,
+      banTill: {
+         type: Date, // Date.now() gives time in milliseconds since 01/01/1970. To get time in a weeks time its Date.now() + (7 * 24 * 3600000). 7 is days, 24 is hours, and 3600000 is milliseconds in one hour
          default: null,
       },
    },
@@ -54,13 +56,13 @@ const UserSchema = new mongoose.Schema(
 );
 
 UserSchema.pre("save", async function (next: mongoose.HookNextFunction) {
-   let user = <UserInterface>this;
+   const user = <UserInterface>this;
 
    // Only hash password if it is new or modified
    if (!user.isModified("password")) return next();
 
-   const salt = await genSalt(10);
-   const hash = await bcryptHash(user.password, salt);
+   const salt = await bcrypt.genSalt(10);
+   const hash = await bcrypt.hash(user.password, salt);
    user.password = hash;
 
    return next();
