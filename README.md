@@ -17,3 +17,8 @@
 1. Made a few adjustments to the User Schema.
 2. Made it so that you can sign up with either email or phone.
 3. Integrated the SendGrid Api and made it so that we can send emails.
+
+## Fourth Commit
+
+1. Deleted registration route and will now create a new registration flow.
+2. Also modified the email function to now use a code.

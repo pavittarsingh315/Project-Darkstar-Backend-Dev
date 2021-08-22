@@ -12,7 +12,7 @@ async function SendMail(receiverEmail: string, receiverName: string) {
          templateId: "d-bccd2db8db3e4699b3e636b78bddb90e",
          dynamicTemplateData: {
             full_name: receiverName,
-            redirect_url: "https://www.youtube.com/watch?v=Rgx8dpiPwpA&ab_channel=JomaTech",
+            verification_code: "945865",
          },
       };
       await sendgrid.send(msg);
