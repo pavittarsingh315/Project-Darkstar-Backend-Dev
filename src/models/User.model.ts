@@ -6,7 +6,6 @@ export interface UserInterface extends mongoose.Document {
    contact: string;
    username: string;
    password: string;
-   isActive: boolean;
    banTill: Date | null;
    createdAt: Date;
    updatedAt: Date;
@@ -41,11 +40,6 @@ const UserSchema = new mongoose.Schema(
          trim: true,
          required: true,
          minLength: [8, "Password too short."],
-      },
-      isActive: {
-         type: Boolean,
-         default: false,
-         required: true,
       },
       banTill: {
          type: Date, // Date.now() gives time in milliseconds since 01/01/1970. To get time in a weeks time its Date.now() + (7 * 24 * 3600000). 7 is days, 24 is hours, and 3600000 is milliseconds in one hour

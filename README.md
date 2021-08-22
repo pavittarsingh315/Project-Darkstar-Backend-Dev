@@ -22,3 +22,9 @@
 
 1. Deleted registration route and will now create a new registration flow.
 2. Also modified the email function to now use a code.
+
+## Fifth Commit - IMPORTANT
+
+1. Created a brand new way of registration using two routes.
+2. First route creates a temporary user that holds the contact value and a verification code we create. The code is emailed or texted.
+3. Second route verifies the code and creates the user and deletes the temporary user.

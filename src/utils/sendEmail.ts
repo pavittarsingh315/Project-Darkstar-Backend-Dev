@@ -4,7 +4,7 @@ const apiKey = <string>process.env.SENDGRID_API_KEY;
 const sender = <string>process.env.SENDGRID_SENDER;
 sendgrid.setApiKey(apiKey);
 
-async function SendMail(receiverEmail: string, receiverName: string) {
+async function SendMail(receiverEmail: string, receiverName: string, code: number) {
    try {
       const msg = {
          to: receiverEmail,
@@ -12,7 +12,7 @@ async function SendMail(receiverEmail: string, receiverName: string) {
          templateId: "d-bccd2db8db3e4699b3e636b78bddb90e",
          dynamicTemplateData: {
             full_name: receiverName,
-            verification_code: "945865",
+            verification_code: code,
          },
       };
       await sendgrid.send(msg);
