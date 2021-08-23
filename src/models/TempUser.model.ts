@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export interface TempUserInterface {
+export interface TempUserInterface extends mongoose.Document {
    verification_code: number;
    contact: string;
    expires_at: Date;

@@ -3,6 +3,7 @@ import User from "../models/User.model";
 import TemporaryUser from "../models/TempUser.model";
 import ValidateEmail from "../utils/emailValidator";
 import SendMail from "../utils/sendEmail";
+import SendText from "../utils/sendText";
 import log from "../logger";
 import { omit } from "lodash";
 
@@ -13,8 +14,14 @@ export async function initiateRegistration(req: Request, res: Response) {
       let { contact, username, name }: { contact: string; username: string; name: string } = req.body;
       if (!contact || !username || !name) throw Error("Please include all fields.");
 
+      if (username.length < 6) throw Error("Username too short.");
+      if (username.length > 30) throw Error("Username too long.");
+
       const usernameTaken = await User.findOne({ username });
       if (usernameTaken) throw Error("Username taken.");
+
+      const registrationAlreadyInitialized = await TemporaryUser.findOne({ contact: contact });
+      if (registrationAlreadyInitialized) throw Error("Registration process already started.");
 
       const contactIsEmail = ValidateEmail(contact);
       const contactTaken = await User.findOne({ contact: contact });
@@ -35,7 +42,7 @@ export async function initiateRegistration(req: Request, res: Response) {
          await SendMail(contact, name, verification_code);
          return res.status(200).json({ success: { msg: "An email as been sent with a verification code." } });
       } else {
-         // send text
+         await SendText(verification_code, contact);
          return res.status(200).json({ success: { msg: "A text as been sent with a verification code." } });
       }
    } catch (err) {
