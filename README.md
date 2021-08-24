@@ -34,3 +34,10 @@
 1. Integrated Twilio to now send verification codes through text messages as well.
 2. Also added additional checks in the initiate registration endpoint.
 3. Also made the temp user interface extend the mongoose.Document.
+
+## Seventh Commit - Big One
+
+1. Restructured the folder setup.
+2. Created administration routes.
+3. Created a whole system for banning users. This is the only route under admin routes
+4. Created a login system using jwt. Both normal login and token login are implemented. Also created a token interface for tokens.
