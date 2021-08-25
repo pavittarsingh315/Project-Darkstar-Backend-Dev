@@ -1,4 +1,6 @@
 import { Express, Request, Response, NextFunction } from "express";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocs from "./documentation";
 import authRoutes from "./routes/auth.routes";
 import adminRoutes from "./routes/admin.routes";
 
@@ -7,6 +9,7 @@ export default function (app: Express): void {
       res.sendStatus(200);
    });
 
+   app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
    app.use("/api/auth", authRoutes);
    app.use("/api/admin", adminRoutes);
 

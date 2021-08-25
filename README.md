@@ -41,3 +41,8 @@
 2. Created administration routes.
 3. Created a whole system for banning users. This is the only route under admin routes
 4. Created a login system using jwt. Both normal login and token login are implemented. Also created a token interface for tokens.
+
+## Eigth Commit
+
+1. Implemented Swagger documentation.
+2. Created documentation for each route we currently have.
