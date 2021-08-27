@@ -1,6 +1,7 @@
 import express, { Router } from "express";
 import { initiateRegistration, finializeRegistration } from "../controllers/auth/registration.controller";
 import { login, tokenLogin } from "../controllers/auth/login.controller";
+import { requestPasswordReset, confirmPasswordReset } from "../controllers/auth/recovery.controller";
 
 const router: Router = express.Router();
 
@@ -9,7 +10,7 @@ const router: Router = express.Router();
  *
  * /api/auth/initiateRegistration:
  *   post:
- *     description: Start the first half of the registration process by creating a temporary user that auto deletes in 5 minutes. Use the finalize route to create real user.
+ *     description: Start the first half of the registration process by creating a temporary object that auto deletes in 5 minutes. Use the finalize route to create real user.
  *     produces:
  *       - application/json
  *     parameters:
@@ -30,7 +31,7 @@ const router: Router = express.Router();
  *         type: string
  *     responses:
  *       200:
- *         description: Temporary user has been created and email or text has been sent, depending on what the contact was, with a verification code inside. This code is used in the finalizeRegistration route.
+ *         description: Temporary object has been created and email or text has been sent, depending on what the contact was, with a verification code inside. This code is used in the finalizeRegistration route.
  *       400:
  *         description: A bad request was sent. Read the return for more details.
  *       500:
@@ -139,5 +140,58 @@ router.post("/login", login);
  *          description: Server error
  */
 router.post("/tokenLogin", tokenLogin);
+
+/**
+ * @swagger
+ *
+ * /api/auth/passwordreset/request:
+ *   post:
+ *     description: Request a recovery code so that it can be used to reset an account password.
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: contact
+ *         description: The email or phone number that the user signed up with. This is used to find the user's account.
+ *         in: formData
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Request successfully processed and recovery code has been sent.
+ *       400:
+ *         description: A bad request was sent. Read the return for more details.
+ *       500:
+ *          description: Server error
+ */
+router.post("/passwordreset/request", requestPasswordReset);
+
+/**
+ * @swagger
+ *
+ * /api/auth/passwordreset/confirm:
+ *   post:
+ *     description: Takes the recovery code sent during the reset request and the new password to update the user's password.
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: code
+ *         description: The recovery code received when requesting the password reset.
+ *         in: formData
+ *         required: true
+ *         type: string
+ *       - name: password
+ *         description: The new password.
+ *         in: formData
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Password has been successfully updated.
+ *       400:
+ *         description: A bad request was sent. Read the return for more details.
+ *       500:
+ *          description: Server error
+ */
+router.post("/passwordreset/confirm", confirmPasswordReset);
 
 export default router;

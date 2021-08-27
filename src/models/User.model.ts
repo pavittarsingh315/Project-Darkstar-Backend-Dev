@@ -38,9 +38,8 @@ const UserSchema = new mongoose.Schema(
       },
       password: {
          type: String,
-         trim: true,
          required: true,
-         minLength: [8, "Password too short."],
+         minLength: [10, "Password too short."],
       },
       strikes: {
          type: Number,
@@ -54,6 +53,7 @@ const UserSchema = new mongoose.Schema(
    { timestamps: true }
 );
 
+// runs when we do .save()
 UserSchema.pre("save", async function (next: mongoose.HookNextFunction) {
    const user = <UserInterface>this;
 

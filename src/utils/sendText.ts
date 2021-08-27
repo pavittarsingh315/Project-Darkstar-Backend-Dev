@@ -5,10 +5,10 @@ const authToken = <string>process.env.TWILIO_AUTH_TOKEN;
 const fromNumber = <string>process.env.TWILIO_FROM_NUMBER;
 const client = twilio(accountSid, authToken);
 
-async function SendText(code: number, toNumber: string) {
+export async function SendRegistrationText(code: number, toNumber: string) {
    try {
       const msg = {
-         body: `Here is your Darkstar verification code: ${code}`,
+         body: `Here is your Darkstar verification code: ${code}. Code expires in 2 minutes!`,
          from: fromNumber,
          to: toNumber,
       };
@@ -19,4 +19,16 @@ async function SendText(code: number, toNumber: string) {
    }
 }
 
-export default SendText;
+export async function SendPasswordResetText(code: number, toNumber: string) {
+   try {
+      const msg = {
+         body: `Here is your Darkstar password reset code: ${code}. Code expires in 2 minutes!`,
+         from: fromNumber,
+         to: toNumber,
+      };
+      await client.messages.create(msg);
+      return;
+   } catch (err) {
+      throw Error(err.message);
+   }
+}

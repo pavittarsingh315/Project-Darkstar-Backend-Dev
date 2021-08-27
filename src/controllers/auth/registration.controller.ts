@@ -1,26 +1,29 @@
 import { Request, Response } from "express";
 import User from "../../models/User.model";
-import TemporaryUser from "../../models/TempUser.model";
+import TemporaryObject from "../../models/TempObj.model";
 import ValidateEmail from "../../utils/emailValidator";
-import SendMail from "../../utils/sendEmail";
-import SendText from "../../utils/sendText";
+import jwt from "jsonwebtoken";
+import { SendRegistrationMail } from "../../utils/sendEmail";
+import { SendRegistrationText } from "../../utils/sendText";
 import log from "../../logger";
 import { omit } from "lodash";
 
 export async function initiateRegistration(req: Request, res: Response) {
    try {
-      if (!req.body.contact || !req.body.username || !req.body.name) return res.status(400).json({ error: { msg: "Please include all fields." } }); // prettier-ignore
+      if (!req.body.contact || !req.body.username || !req.body.name || !req.body.password) return res.status(400).json({ error: { msg: "Please include all fields." } }); // prettier-ignore
       req.body.contact = req.body.contact.replace(/\s+/g, "").toLowerCase();
       req.body.username = req.body.username.replace(/\s+/g, "").toLowerCase();
-      let { contact, username, name }: { contact: string; username: string; name: string } = req.body;
+      let { contact, username, name, password }: { contact: string; username: string; name: string, password: string } = req.body; // prettier-ignore
 
       if (username.length < 6) return res.status(400).json({ error: { msg: "Username too short." } });
       if (username.length > 30) return res.status(400).json({ error: { msg: "Username too long." } });
+      if (contact.length > 50) return res.status(400).json({ error: { msg: "Contact too long." } });
+      if (password.length < 10) return res.status(400).json({ error: { msg: "Password too short." } });
 
       const usernameTaken = await User.findOne({ username });
       if (usernameTaken) return res.status(400).json({ error: { msg: "Username taken" } });
 
-      const registrationAlreadyInitialized = await TemporaryUser.findOne({ contact: contact });
+      const registrationAlreadyInitialized = await TemporaryObject.findOne({ contact: contact });
       if (registrationAlreadyInitialized) return res.status(400).json({ error: { msg: "Registration process already started." } }); // prettier-ignore
 
       const contactIsEmail = ValidateEmail(contact);
@@ -34,15 +37,15 @@ export async function initiateRegistration(req: Request, res: Response) {
       }
 
       const verification_code: number = Math.floor(100000 + Math.random() * 900000);
-      const newTempUser = new TemporaryUser({ contact, verification_code });
-      const savedTempUser = await newTempUser.save();
-      if (!savedTempUser) throw Error("Something went wrong.");
+      const newTempObj = new TemporaryObject({ contact, verification_code });
+      const savedTempObj = await newTempObj.save();
+      if (!savedTempObj) throw Error("Something went wrong.");
 
       if (contactIsEmail) {
-         await SendMail(contact, name, verification_code);
+         await SendRegistrationMail(contact, name, verification_code);
          return res.status(200).json({ success: { msg: "An email as been sent with a verification code." } });
       } else {
-         await SendText(verification_code, contact);
+         await SendRegistrationText(verification_code, contact);
          return res.status(200).json({ success: { msg: "A text as been sent with a verification code." } });
       }
    } catch (err) {
@@ -59,18 +62,29 @@ export async function finializeRegistration(req: Request, res: Response) {
       req.body.code = Number(req.body.code);
       let { code, contact }: { code: number; contact: string } = req.body;
 
-      const tempUser = await TemporaryUser.findOne({ contact });
-      if(!tempUser) return res.status(400).json({ error: { msg: "Code has expired and your registration process has been terminated. Restart the registration process." } }); // prettier-ignore
+      const tempObj = await TemporaryObject.findOne({ contact });
+      if(!tempObj) return res.status(400).json({ error: { msg: "Code has expired and your registration process has been terminated. Restart the registration process." } }); // prettier-ignore
 
-      if (tempUser.verification_code !== code) return res.status(400).json({ error: { msg: "Incorrect Code." } });
+      if (tempObj.verification_code !== code) return res.status(400).json({ error: { msg: "Incorrect Code." } });
 
       const newUser = new User(omit(req.body, ["code"]));
       const savedUser = await newUser.save();
       if (!savedUser) throw Error("Something went wrong.");
 
-      await tempUser.deleteOne();
+      await tempObj.deleteOne();
 
-      return res.status(201).json({ success: { msg: "Account Created Successfully!" } });
+      const accessSecret = <string>process.env.ACCESS_TOKEN_SECRET;
+      const refreshSecret = <string>process.env.REFRESH_TOKEN_SECRET;
+      const access = jwt.sign({ token_type: "access", userId: savedUser._id }, accessSecret, { expiresIn: "30d" });
+      const refresh = jwt.sign({ token_type: "refresh", userId: savedUser._id }, refreshSecret, { expiresIn: "2y" });
+
+      return res.status(200).json({
+         success: {
+            access,
+            refresh,
+            user: omit(savedUser.toJSON(), ["banTill", "password", "createdAt", "updatedAt", "strikes"]),
+         },
+      });
    } catch (err) {
       log.error(err.message);
       return res.status(500).json({ error: { msg: err.message } });

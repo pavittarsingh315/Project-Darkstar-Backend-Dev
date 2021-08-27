@@ -9,7 +9,7 @@ export async function banUser(req: Request, res: Response) {
       if (user?.banTill) return res.status(400).json({ success: { msg: "User is already under a ban." } });
 
       let banLength;
-      let userDeleted = null;
+      let maxStrikesReached = false;
       switch (user?.strikes) {
          case 0:
             const oneDayBan = new Date(new Date().getTime() + 24 * 3600 * 1000); // 24 * 3600 * 1000 = 1 day in milliseconds
@@ -27,15 +27,18 @@ export async function banUser(req: Request, res: Response) {
             banLength = "one month";
             break;
          case 3:
-            await user.deleteOne();
-            userDeleted = true;
+            maxStrikesReached = true;
             break;
          default:
             break;
       }
 
-      if (userDeleted)
-         return res.status(200).json({ success: { msg: "Maximum strikes allowed surpassed. User deleted." } });
+      if (maxStrikesReached)
+         return res.status(207).json({
+            success: {
+               msg: "This user has exceeded the maximum number of strikes. Suggested Action: Delete the user's account.",
+            },
+         });
 
       return res.status(200).json({ success: { msg: `User has been banned for a ${banLength}.` } });
    } catch (err) {

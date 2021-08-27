@@ -4,7 +4,7 @@ const apiKey = <string>process.env.SENDGRID_API_KEY;
 const sender = <string>process.env.SENDGRID_SENDER;
 sendgrid.setApiKey(apiKey);
 
-async function SendMail(receiverEmail: string, receiverName: string, code: number) {
+export async function SendRegistrationMail(receiverEmail: string, receiverName: string, code: number) {
    try {
       const msg = {
          to: receiverEmail,
@@ -22,4 +22,19 @@ async function SendMail(receiverEmail: string, receiverName: string, code: numbe
    }
 }
 
-export default SendMail;
+export async function SendPasswordResetMail(receiverEmail: string, code: number) {
+   try {
+      const msg = {
+         to: receiverEmail,
+         from: sender,
+         templateId: "d-7333e78a73e946638808809e4020df8b",
+         dynamicTemplateData: {
+            verification_code: code,
+         },
+      };
+      await sendgrid.send(msg);
+      return;
+   } catch (err) {
+      throw Error(err.message);
+   }
+}

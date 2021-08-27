@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import User from "../../models/User.model";
+import User, { UserInterface } from "../../models/User.model";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import ValidateEmail from "../../utils/emailValidator";
+import findUserByContact from "../../helpers/findUserByContact";
 import log from "../../logger";
 import { omit } from "lodash";
 import TokenInterface from "../../interfaces/tokens";
@@ -14,17 +14,9 @@ export async function login(req: Request, res: Response) {
       req.body.identifier = req.body.identifier.replace(/\s+/g, "").toLowerCase();
       const { identifier, password }: { identifier: string; password: string } = req.body;
 
-      const isEmail = ValidateEmail(identifier);
-      let user;
-      if (isEmail) {
-         const userWithEmail = await User.findOne({ contact: identifier });
-         if (!userWithEmail) return res.status(400).json({ error: { msg: "No user with this email." } });
-         user = userWithEmail;
-      } else {
-         const userWithPhone = await User.findOne({ contact: identifier });
-         if (!userWithPhone) return res.status(400).json({ error: { msg: "No user with this phone." } });
-         user = userWithPhone;
-      }
+      const response = await findUserByContact(identifier);
+      if (response.error) return res.status(400).json({ error: { msg: response.error } });
+      const user = <UserInterface>response.success;
 
       if (user.banTill) {
          const timeNowInString = new Date().getTime();

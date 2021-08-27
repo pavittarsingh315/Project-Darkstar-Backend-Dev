@@ -46,3 +46,12 @@
 
 1. Implemented Swagger documentation.
 2. Created documentation for each route we currently have.
+
+## Ninth Commit
+
+1. Changed ban function so that it doesn't delete the user after maximum strikes reached. Instead it sends a response saying to delete them.
+2. Created a helper function called findUserByContact and changed the login route to use that.
+3. Changed the name of the TempUser model to TempObj to make it more generic cause just a model has lots of use cases.
+4. Split the Mailing and Texting functions into different function cause we can send emails or texts for lots of different reasons.
+5. Updated the registration route to now require a password. When a user is finally created, we send them tokens just like the login route.
+6. Created two routes for both requesting and confirming password resets.

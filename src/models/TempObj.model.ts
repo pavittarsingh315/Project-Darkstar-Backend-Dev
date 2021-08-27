@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
-export interface TempUserInterface extends mongoose.Document {
+export interface TempObjInterface extends mongoose.Document {
    verification_code: number;
    contact: string;
    expires_at: Date;
 }
 
-const TemporaryUserSchema = new mongoose.Schema(
+const TemporaryObjectSchema = new mongoose.Schema(
    {
       verification_code: {
          type: Number,
@@ -23,11 +23,11 @@ const TemporaryUserSchema = new mongoose.Schema(
       expires_at: {
          type: Date,
          default: Date.now,
-         expires: 300, // # of seconds
+         expires: 120, // # of seconds
       },
    },
    { timestamps: false }
 );
 
-const TemporaryUser = mongoose.model<TempUserInterface>("TemporaryUser", TemporaryUserSchema);
-export default TemporaryUser;
+const TemporaryObject = mongoose.model<TempObjInterface>("TemporaryObject", TemporaryObjectSchema);
+export default TemporaryObject;
