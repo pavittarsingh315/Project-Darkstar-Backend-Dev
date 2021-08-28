@@ -75,8 +75,8 @@ export async function finializeRegistration(req: Request, res: Response) {
 
       const accessSecret = <string>process.env.ACCESS_TOKEN_SECRET;
       const refreshSecret = <string>process.env.REFRESH_TOKEN_SECRET;
-      const access = jwt.sign({ token_type: "access", userId: savedUser._id }, accessSecret, { expiresIn: "30d" });
-      const refresh = jwt.sign({ token_type: "refresh", userId: savedUser._id }, refreshSecret, { expiresIn: "2y" });
+      const access = jwt.sign({ token_type: "access", userId: savedUser._id, user_type: savedUser.userType }, accessSecret, { expiresIn: "30d" }); // prettier-ignore
+      const refresh = jwt.sign({ token_type: "refresh", userId: savedUser._id, user_type: savedUser.userType }, refreshSecret, { expiresIn: "2y" }); // prettier-ignore
 
       return res.status(200).json({
          success: {

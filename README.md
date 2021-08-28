@@ -55,3 +55,9 @@
 4. Split the Mailing and Texting functions into different function cause we can send emails or texts for lots of different reasons.
 5. Updated the registration route to now require a password. When a user is finally created, we send them tokens just like the login route.
 6. Created two routes for both requesting and confirming password resets.
+
+## Tenth Commit
+
+1. Forgot to uncomment the send password email. I didn't wanna spam my email so i just commented it out and i forgot to uncomment it but now i did.
+2. Created a middleware to check for staff/admin status prior to executing an admin route.
+3. Added a field for a user type on the User Schema. User types are user, staff, and admin.

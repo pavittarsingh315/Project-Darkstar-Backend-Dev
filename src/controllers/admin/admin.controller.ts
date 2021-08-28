@@ -5,12 +5,17 @@ import log from "../../logger";
 export async function banUser(req: Request, res: Response) {
    try {
       const user = await User.findById(req.params.id);
+      if (!user) return res.status(400).json({ error: { msg: "User does not exist." } });
 
-      if (user?.banTill) return res.status(400).json({ success: { msg: "User is already under a ban." } });
+      if (user.banTill) return res.status(400).json({ success: { msg: "User is already under a ban." } });
+
+      if (user.userType === "staff" || user.userType === "admin") {
+         return res.status(400).json({ success: { msg: `You can't ban this user they're a(n) ${user.userType} member. Suggested action is to demote or delete the user.` } }); // prettier-ignore
+      }
 
       let banLength;
       let maxStrikesReached = false;
-      switch (user?.strikes) {
+      switch (user.strikes) {
          case 0:
             const oneDayBan = new Date(new Date().getTime() + 24 * 3600 * 1000); // 24 * 3600 * 1000 = 1 day in milliseconds
             await user.updateOne({ strikes: 1, banTill: oneDayBan });

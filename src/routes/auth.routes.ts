@@ -29,6 +29,11 @@ const router: Router = express.Router();
  *         in: formData
  *         required: true
  *         type: string
+ *       - name: password
+ *         description: The password the registerer chooses.
+ *         in: formData
+ *         required: true
+ *         type: string
  *     responses:
  *       200:
  *         description: Temporary object has been created and email or text has been sent, depending on what the contact was, with a verification code inside. This code is used in the finalizeRegistration route.
@@ -75,7 +80,7 @@ router.post("/initiateRegistration", initiateRegistration);
  *         type: string
  *     responses:
  *       201:
- *         description: User has been successfully created.
+ *         description: User has been successfully created. The user object and auth tokens are sent back.
  *       400:
  *         description: A bad request was sent. Read the return for more details.
  *       500:
@@ -176,6 +181,11 @@ router.post("/passwordreset/request", requestPasswordReset);
  *     parameters:
  *       - name: code
  *         description: The recovery code received when requesting the password reset.
+ *         in: formData
+ *         required: true
+ *         type: string
+ *       - name: contact
+ *         description: The email or phone of the user who requested the reset.
  *         in: formData
  *         required: true
  *         type: string

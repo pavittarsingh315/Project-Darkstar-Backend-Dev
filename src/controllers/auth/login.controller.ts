@@ -34,8 +34,8 @@ export async function login(req: Request, res: Response) {
 
       const accessSecret = <string>process.env.ACCESS_TOKEN_SECRET;
       const refreshSecret = <string>process.env.REFRESH_TOKEN_SECRET;
-      const access = jwt.sign({ token_type: "access", userId: user._id }, accessSecret, { expiresIn: "30d" });
-      const refresh = jwt.sign({ token_type: "refresh", userId: user._id }, refreshSecret, { expiresIn: "2y" });
+      const access = jwt.sign({ token_type: "access", userId: user._id, user_type: user.userType }, accessSecret, { expiresIn: "30d" }); // prettier-ignore
+      const refresh = jwt.sign({ token_type: "refresh", userId: user._id, user_type: user.userType }, refreshSecret, { expiresIn: "2y" }); // prettier-ignore
 
       return res.status(200).json({
          success: {
@@ -64,7 +64,7 @@ export async function tokenLogin(req: Request, res: Response) {
 
       if (Date.now() >= accessDecoded.exp * 1000) {
          // create new access token if access is expired.
-         access = jwt.sign({ token_type: "access", userId: refreshDecoded.userId }, accessSecret, { expiresIn: "30d" });
+         access = jwt.sign({ token_type: "access", userId: refreshDecoded.userId, user_type: refreshDecoded.user_type }, accessSecret, { expiresIn: "30d" }); // prettier-ignore
       }
 
       const user = await User.findById(accessDecoded.userId);

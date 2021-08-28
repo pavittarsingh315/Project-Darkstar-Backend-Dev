@@ -4,7 +4,7 @@ import TemporaryObject from "../../models/TempObj.model";
 import User, { UserInterface } from "../../models/User.model";
 import ValidateEmail from "../../utils/emailValidator";
 import findUserByContact from "../../helpers/findUserByContact";
-// import { SendPasswordResetMail } from "../../utils/sendEmail";
+import { SendPasswordResetMail } from "../../utils/sendEmail";
 import { SendPasswordResetText } from "../../utils/sendText";
 import log from "../../logger";
 
@@ -25,7 +25,7 @@ export async function requestPasswordReset(req: Request, res: Response) {
       if (!savedTempObj) throw Error("Something went wrong.");
 
       if (isEmail) {
-         // await SendPasswordResetMail(user.contact, verification_code);
+         await SendPasswordResetMail(user.contact, verification_code);
          return res.status(200).json({ success: { msg: "An email as been sent with a verification code." } });
       } else {
          await SendPasswordResetText(verification_code, user.contact);

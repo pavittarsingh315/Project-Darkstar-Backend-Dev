@@ -6,6 +6,7 @@ export interface UserInterface extends mongoose.Document {
    contact: string;
    username: string;
    password: string;
+   userType: string;
    strikes: number;
    banTill: Date | null;
    createdAt: Date;
@@ -44,6 +45,11 @@ const UserSchema = new mongoose.Schema(
       strikes: {
          type: Number,
          default: 0,
+      },
+      userType: {
+         type: String,
+         enum: ["user", "staff", "admin"],
+         default: "user",
       },
       banTill: {
          type: Date,
