@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import User from "../../models/User.model";
+import { RequestInterface } from "../../middleware/staffPermissionHandler";
 import log from "../../logger";
 
 export async function banUser(req: Request, res: Response) {
@@ -7,10 +8,10 @@ export async function banUser(req: Request, res: Response) {
       const user = await User.findById(req.params.id);
       if (!user) return res.status(400).json({ error: { msg: "User does not exist." } });
 
-      if (user.banTill) return res.status(400).json({ success: { msg: "User is already under a ban." } });
+      if (user.banTill) return res.status(400).json({ error: { msg: "User is already under a ban." } });
 
       if (user.userType === "staff" || user.userType === "admin") {
-         return res.status(400).json({ success: { msg: `You can't ban this user they're a(n) ${user.userType} member. Suggested action is to demote or delete the user.` } }); // prettier-ignore
+         return res.status(400).json({ error: { msg: `You can't ban this user they're a(n) ${user.userType} member. Suggested action is to demote or delete the user.` } }); // prettier-ignore
       }
 
       let banLength;
@@ -45,7 +46,39 @@ export async function banUser(req: Request, res: Response) {
             },
          });
 
-      return res.status(200).json({ success: { msg: `User has been banned for a ${banLength}.` } });
+      return res.status(200).json({ success: { msg: `User has been ban for ${banLength}.` } });
+   } catch (err) {
+      log.error(err.message);
+      if (err.message.substring(0, 23) === "Cast to ObjectId failed")
+         return res.status(400).json({ error: { msg: "User does not exist." } });
+      return res.status(500).json({ error: { msg: err.message } });
+   }
+}
+
+export async function deleteUser(req: RequestInterface, res: Response) {
+   try {
+      const toBeDeletedUser = await User.findById(req.params.id);
+      if (!toBeDeletedUser) return res.status(400).json({ error: { msg: "User does not exist." } });
+
+      // You cannot delete a superuser
+      if (toBeDeletedUser.userType === "superuser") {
+         return res.status(400).json({ error: { msg: "You can't delete a superuser." } });
+      }
+
+      // Only superuser can delete admin
+      if (toBeDeletedUser.userType === "admin" && req.user_type !== "superuser") {
+         return res.status(400).json({ error: { msg: "You do not have permission to delete an admin." } });
+      }
+
+      // Only superusers and admins can delete staff member.
+      if (toBeDeletedUser.userType === "staff" && req.user_type === "staff") {
+         return res.status(400).json({ error: { msg: "You cannot delete other staff." } });
+      }
+
+      // Superuser, admin, and staff can delete normal user. Logic is done in the middleware
+      await toBeDeletedUser.deleteOne();
+
+      return res.status(200).json({ success: { msg: "User successfully deleted." } });
    } catch (err) {
       log.error(err.message);
       if (err.message.substring(0, 23) === "Cast to ObjectId failed")

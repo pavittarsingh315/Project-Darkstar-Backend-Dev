@@ -48,7 +48,7 @@ const UserSchema = new mongoose.Schema(
       },
       userType: {
          type: String,
-         enum: ["user", "staff", "admin"],
+         enum: ["user", "staff", "admin", "superuser"],
          default: "user",
       },
       banTill: {

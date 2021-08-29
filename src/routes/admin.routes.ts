@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import { banUser } from "../controllers/admin/admin.controller";
+import { banUser, deleteUser } from "../controllers/admin/admin.controller";
 import staffPermissionHandler from "../middleware/staffPermissionHandler";
 
 const router: Router = express.Router();
@@ -26,5 +26,7 @@ const router: Router = express.Router();
  *          description: Server error
  */
 router.post("/ban/:id", staffPermissionHandler, banUser);
+
+router.post("/delete/:id", staffPermissionHandler, deleteUser);
 
 export default router;

@@ -61,3 +61,9 @@
 1. Forgot to uncomment the send password email. I didn't wanna spam my email so i just commented it out and i forgot to uncomment it but now i did.
 2. Created a middleware to check for staff/admin status prior to executing an admin route.
 3. Added a field for a user type on the User Schema. User types are user, staff, and admin.
+
+## Eleventh Commit
+
+1. Made it so we check if a user is banned when doing token login.
+2. Added a user type of superuser.
+3. Created a route to delete a user and made use of user types to essentially created a hierarchy of the user types and who can delete who.

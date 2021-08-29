@@ -70,6 +70,17 @@ export async function tokenLogin(req: Request, res: Response) {
       const user = await User.findById(accessDecoded.userId);
       if (!user) throw Error("User does not exist.");
 
+      if (user.banTill) {
+         const timeNowInString = new Date().getTime();
+         const banTimeInString = user.banTill.getTime();
+         if (timeNowInString <= banTimeInString) {
+            const timeTillUnBan = millisecondsToTimeLeft(banTimeInString - timeNowInString);
+            return res.status(400).json({ error: { msg: `You are banned for ${timeTillUnBan}.` } });
+         } else if (timeNowInString > banTimeInString) {
+            await user.updateOne({ banTill: null });
+         }
+      }
+
       return res.status(200).json({
          success: {
             access,
