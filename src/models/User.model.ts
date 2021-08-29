@@ -73,5 +73,6 @@ UserSchema.pre("save", async function (next: mongoose.HookNextFunction) {
    return next();
 });
 
-const User = mongoose.model<UserInterface>("User", UserSchema);
+const db = mongoose.connection.useDb("Authentication");
+const User = db.model<UserInterface>("User", UserSchema);
 export default User;

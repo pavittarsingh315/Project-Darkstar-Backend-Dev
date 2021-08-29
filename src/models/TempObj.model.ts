@@ -29,5 +29,6 @@ const TemporaryObjectSchema = new mongoose.Schema(
    { timestamps: false }
 );
 
-const TemporaryObject = mongoose.model<TempObjInterface>("TemporaryObject", TemporaryObjectSchema);
+const db = mongoose.connection.useDb("Authentication");
+const TemporaryObject = db.model<TempObjInterface>("TemporaryObject", TemporaryObjectSchema);
 export default TemporaryObject;

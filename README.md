@@ -67,3 +67,10 @@
 1. Made it so we check if a user is banned when doing token login.
 2. Added a user type of superuser.
 3. Created a route to delete a user and made use of user types to essentially created a hierarchy of the user types and who can delete who.
+
+## Twelfth Commit - SUPER IMPORTANT
+
+1. Implemented multiple database architecture.
+2. Created a new database in cluster0 named Authentication. Deleted myFirstDatabase.
+3. Changed the connection uri to contain the name of the Authentication database. The name of the database in the uri is the default database that the connection connects to.
+4. There is a wierd deprecation warning that literally should be not happening but it is but its not app killing ya know.
