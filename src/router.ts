@@ -4,7 +4,7 @@ import swaggerDocs from "./documentation";
 import authRoutes from "./routes/auth.routes";
 import adminRoutes from "./routes/admin.routes";
 
-export default function (app: Express): void {
+export default async function (app: Express) {
    app.get("/healthcheck", (req: Request, res: Response) => {
       res.sendStatus(200);
    });
@@ -18,4 +18,6 @@ export default function (app: Express): void {
          error: { msg: "Route not found. Check url for errors or wrong http method." },
       });
    });
+
+   return;
 }

@@ -74,3 +74,8 @@
 2. Created a new database in cluster0 named Authentication. Deleted myFirstDatabase.
 3. Changed the connection uri to contain the name of the Authentication database. The name of the database in the uri is the default database that the connection connects to.
 4. There is a wierd deprecation warning that literally should be not happening but it is but its not app killing ya know.
+
+## Thirteenth Commit
+
+1. Refactored the database connection method.
+2. Implemented the nodejs cluster and os module to spawn processes on all threads of the machine's processor if the node_env is in production mode. This is done because since nodejs is single thread, it doesn't use the entire power of the processor which is inefficient so by using cluster and os in production we make it so node essentially becomes a multi thread process.
