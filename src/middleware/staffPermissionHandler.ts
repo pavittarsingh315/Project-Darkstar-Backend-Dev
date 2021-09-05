@@ -22,7 +22,8 @@ async function staffPermissionHandler(req: RequestInterface, res: Response, next
       }
 
       return;
-   } catch (err) {
+   } catch (e) {
+      let err = <Error>e;
       log.error(err.message);
       return res.status(500).json({ error: { msg: err.message } });
    }

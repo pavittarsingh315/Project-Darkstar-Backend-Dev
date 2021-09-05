@@ -11,7 +11,8 @@ async function connect() {
       await mongoose.connect(uri);
       log.info("MongoDB Connected...");
       return;
-   } catch (err) {
+   } catch (e) {
+      let err = <Error>e;
       log.error(err);
       process.exit(1);
    }

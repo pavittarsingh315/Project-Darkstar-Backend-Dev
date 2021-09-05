@@ -48,7 +48,8 @@ export async function initiateRegistration(req: Request, res: Response) {
          await SendRegistrationText(verification_code, contact);
          return res.status(200).json({ success: { msg: "A text as been sent with a verification code." } });
       }
-   } catch (err) {
+   } catch (e) {
+      let err = <Error>e;
       log.error(err.message);
       return res.status(500).json({ error: { msg: err.message } });
    }
@@ -85,7 +86,8 @@ export async function finializeRegistration(req: Request, res: Response) {
             user: omit(savedUser.toJSON(), ["banTill", "password", "createdAt", "updatedAt", "strikes"]),
          },
       });
-   } catch (err) {
+   } catch (e) {
+      let err = <Error>e;
       log.error(err.message);
       return res.status(500).json({ error: { msg: err.message } });
    }

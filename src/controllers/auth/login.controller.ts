@@ -44,7 +44,8 @@ export async function login(req: Request, res: Response) {
             user: omit(user.toJSON(), ["banTill", "password", "createdAt", "updatedAt", "strikes"]),
          },
       });
-   } catch (err) {
+   } catch (e) {
+      let err = <Error>e;
       log.error(err.message);
       return res.status(500).json({ error: { msg: err.message } });
    }
@@ -88,7 +89,8 @@ export async function tokenLogin(req: Request, res: Response) {
             user: omit(user.toJSON(), ["banTill", "password", "createdAt", "updatedAt", "strikes"]),
          },
       });
-   } catch (err) {
+   } catch (e) {
+      let err = <Error>e;
       log.error(err.message);
       return res.status(500).json({ error: { msg: err.message } });
    }

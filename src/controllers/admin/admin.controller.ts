@@ -47,7 +47,8 @@ export async function banUser(req: Request, res: Response) {
          });
 
       return res.status(200).json({ success: { msg: `User has been ban for ${banLength}.` } });
-   } catch (err) {
+   } catch (e) {
+      let err = <Error>e;
       log.error(err.message);
       if (err.message.substring(0, 23) === "Cast to ObjectId failed")
          return res.status(400).json({ error: { msg: "User does not exist." } });
@@ -79,7 +80,8 @@ export async function deleteUser(req: RequestInterface, res: Response) {
       await toBeDeletedUser.deleteOne();
 
       return res.status(200).json({ success: { msg: "User successfully deleted." } });
-   } catch (err) {
+   } catch (e) {
+      let err = <Error>e;
       log.error(err.message);
       if (err.message.substring(0, 23) === "Cast to ObjectId failed")
          return res.status(400).json({ error: { msg: "User does not exist." } });

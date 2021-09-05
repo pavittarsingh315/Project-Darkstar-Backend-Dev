@@ -14,7 +14,8 @@ export async function SendRegistrationText(code: number, toNumber: string) {
       };
       await client.messages.create(msg);
       return;
-   } catch (err) {
+   } catch (e) {
+      let err = <Error>e;
       throw Error(err.message);
    }
 }
@@ -28,7 +29,8 @@ export async function SendPasswordResetText(code: number, toNumber: string) {
       };
       await client.messages.create(msg);
       return;
-   } catch (err) {
+   } catch (e) {
+      let err = <Error>e;
       throw Error(err.message);
    }
 }

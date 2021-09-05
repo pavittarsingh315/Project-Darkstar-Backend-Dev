@@ -17,7 +17,8 @@ export async function SendRegistrationMail(receiverEmail: string, receiverName: 
       };
       await sendgrid.send(msg);
       return;
-   } catch (err) {
+   } catch (e) {
+      let err = <Error>e;
       throw Error(err.message);
    }
 }
@@ -34,7 +35,8 @@ export async function SendPasswordResetMail(receiverEmail: string, code: number)
       };
       await sendgrid.send(msg);
       return;
-   } catch (err) {
+   } catch (e) {
+      let err = <Error>e;
       throw Error(err.message);
    }
 }

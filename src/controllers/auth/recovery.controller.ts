@@ -31,7 +31,8 @@ export async function requestPasswordReset(req: Request, res: Response) {
          await SendPasswordResetText(verification_code, user.contact);
          return res.status(200).json({ success: { msg: "A text as been sent with a verification code." } });
       }
-   } catch (err) {
+   } catch (e) {
+      let err = <Error>e;
       log.error(err.message);
       return res.status(500).json({ error: { msg: err.message } });
    }
@@ -61,7 +62,8 @@ export async function confirmPasswordReset(req: Request, res: Response) {
       await tempObj.deleteOne();
 
       return res.status(200).json({ success: { msg: "Password successfully updated." } });
-   } catch (err) {
+   } catch (e) {
+      let err = <Error>e;
       log.error(err.message);
       return res.status(500).json({ error: { msg: err.message } });
    }
