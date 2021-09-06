@@ -9,6 +9,14 @@ const options: Options = {
       },
       host: "localhost:5000",
       basePath: "/",
+      securityDefinitions: {
+         auth: {
+            type: "apiKey",
+            name: "Authorization",
+            description: "Access token of user making request",
+            in: "header",
+         },
+      },
    },
    apis: ["**/*routes.ts"],
 };

@@ -10,7 +10,7 @@ export async function banUser(req: Request, res: Response) {
 
       if (user.banTill) return res.status(400).json({ error: { msg: "User is already under a ban." } });
 
-      if (user.userType === "staff" || user.userType === "admin") {
+      if (user.userType === "staff" || user.userType === "admin" || user.userType === "superuser") {
          return res.status(400).json({ error: { msg: `You can't ban this user they're a(n) ${user.userType} member. Suggested action is to demote or delete the user.` } }); // prettier-ignore
       }
 

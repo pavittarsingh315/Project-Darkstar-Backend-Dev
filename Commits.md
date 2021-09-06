@@ -83,3 +83,7 @@
 ## Fourteenth Commit
 
 1. Changed the catch portion of every try-catch in the code. Made the err variable have an Error type.
+
+## Fifteenth Commit
+
+1. Made it so the Swagger documentation now can have place a token into the Authorization header for request that require authentication.
