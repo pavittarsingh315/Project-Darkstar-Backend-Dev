@@ -4,9 +4,10 @@
    "description": "Project Darkstar Backend with TypeScript Dev",
    "main": "server.js",
    "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1",
       "dev": "nodemon src/server.ts",
-      "server": "node dist/server.js"
+      "server": "node dist/server.js",
+      "start": "node dist/server.js",
+      "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install && tsc"
    },
    "keywords": [
       "TypeScript",
@@ -15,6 +16,9 @@
    ],
    "author": "Pavittar Singh",
    "license": "UNLICENSED",
+   "engines": {
+      "node": "14.16.0"
+   },
    "dependencies": {
       "@sendgrid/mail": "^7.4.6",
       "bcryptjs": "^2.4.3",

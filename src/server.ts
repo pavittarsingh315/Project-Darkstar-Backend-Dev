@@ -21,17 +21,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
 
-const port = <number>(<unknown>process.env.PORT);
-const host = <string>process.env.HOST;
+const port = <number>(<unknown>process.env.PORT) || 5000;
 const envState = <string>process.env.NODE_ENV;
 
-if (envState === "development") {
-   app.listen(port, host, () => {
-      log.info(`Server listening at http://${host}:${port}`);
-      database();
-      router(app);
-   });
-} else if (envState === "production") {
+if (envState === "production") {
    const numCPU = cpus().length;
    // can't use cluster.isPrimary but that is only available in node v16+ and i have v14. Could do cluster.isMaster but i don't like the deprecation warning.
    if (!cluster.isWorker) {
@@ -44,10 +37,16 @@ if (envState === "development") {
          cluster.fork();
       });
    } else {
-      app.listen(port, host, () => {
-         log.info(`Server ${process.pid} listening at http://${host}:${port}`);
+      app.listen(port, () => {
+         log.info(`Server ${process.pid} listening on port ${port}`);
          database();
          router(app);
       });
    }
+} else {
+   app.listen(port, () => {
+      log.info(`Server listening on port ${port}`);
+      database();
+      router(app);
+   });
 }

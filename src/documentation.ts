@@ -7,7 +7,7 @@ const options: Options = {
          description: "Documentation for the Project Darkstar API.",
          version: "1.0.0",
       },
-      host: "localhost:5000",
+      host: "https://testing-darkstar-for-frontend.herokuapp.com",
       basePath: "/",
       securityDefinitions: {
          auth: {

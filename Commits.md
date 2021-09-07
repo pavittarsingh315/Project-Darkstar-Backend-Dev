@@ -87,3 +87,7 @@
 ## Fifteenth Commit
 
 1. Made it so the Swagger documentation now can have place a token into the Authorization header for request that require authentication.
+
+## Sixteenth Commit - Important
+
+1. Refactored the app so it can be deployed to Heroku.
