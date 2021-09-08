@@ -7,7 +7,7 @@
       "dev": "nodemon src/server.ts",
       "server": "node dist/server.js",
       "start": "node dist/server.js",
-      "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install && tsc"
+      "postinstall": "tsc"
    },
    "keywords": [
       "TypeScript",
