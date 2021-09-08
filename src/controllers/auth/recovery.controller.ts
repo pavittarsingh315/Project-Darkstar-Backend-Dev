@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import TemporaryObject from "../../models/TempObj.model";
 import User, { UserInterface } from "../../models/User.model";
 import ValidateEmail from "../../utils/emailValidator";
-import findUserByContact from "../../helpers/findUserByContact";
 import { SendPasswordResetMail } from "../../utils/sendEmail";
 import { SendPasswordResetText } from "../../utils/sendText";
 import log from "../../logger";
@@ -15,9 +14,9 @@ export async function requestPasswordReset(req: Request, res: Response) {
       const { contact }: { contact: string } = req.body;
       const isEmail = ValidateEmail(contact);
 
-      const response = await findUserByContact(contact);
-      if (response.error) return res.status(400).json({ error: { msg: response.error } });
-      const user = <UserInterface>response.success;
+      const userExists = await User.findOne({ contact });
+      if (!userExists) return res.status(400).json({ error: { msg: "Account not found." } });
+      const user = <UserInterface>userExists;
 
       const verification_code: number = Math.floor(100000 + Math.random() * 900000);
       const newTempObj = new TemporaryObject({ contact: user.contact, verification_code });

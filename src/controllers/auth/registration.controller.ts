@@ -32,7 +32,7 @@ export async function initiateRegistration(req: Request, res: Response) {
          if (contactIsEmail) {
             return res.status(400).json({ error: { msg: "Email address already in use." } });
          } else {
-            return res.status(400).json({ error: { msg: "Phone number already in use." } });
+            return res.status(400).json({ error: { msg: "Contact already in use." } });
          }
       }
 
@@ -83,7 +83,7 @@ export async function finializeRegistration(req: Request, res: Response) {
          success: {
             access,
             refresh,
-            user: omit(savedUser.toJSON(), ["banTill", "password", "createdAt", "updatedAt", "strikes"]),
+            user: omit(savedUser.toJSON(), ["banTill", "password", "createdAt", "updatedAt", "strikes", "userType"]),
          },
       });
    } catch (e) {

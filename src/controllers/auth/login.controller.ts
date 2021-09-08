@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import User, { UserInterface } from "../../models/User.model";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import findUserByContact from "../../helpers/findUserByContact";
 import log from "../../logger";
 import { omit } from "lodash";
 import TokenInterface from "../../interfaces/tokens";
@@ -14,9 +13,9 @@ export async function login(req: Request, res: Response) {
       req.body.identifier = req.body.identifier.replace(/\s+/g, "").toLowerCase();
       const { identifier, password }: { identifier: string; password: string } = req.body;
 
-      const response = await findUserByContact(identifier);
-      if (response.error) return res.status(400).json({ error: { msg: response.error } });
-      const user = <UserInterface>response.success;
+      const userExists = await User.findOne({ contact: identifier });
+      if (!userExists) return res.status(400).json({ error: { msg: "Account not found." } });
+      const user = <UserInterface>userExists;
 
       if (user.banTill) {
          const timeNowInString = new Date().getTime();
@@ -41,7 +40,7 @@ export async function login(req: Request, res: Response) {
          success: {
             access,
             refresh,
-            user: omit(user.toJSON(), ["banTill", "password", "createdAt", "updatedAt", "strikes"]),
+            user: omit(user.toJSON(), ["banTill", "password", "createdAt", "updatedAt", "strikes", "userType"]),
          },
       });
    } catch (e) {
@@ -86,7 +85,7 @@ export async function tokenLogin(req: Request, res: Response) {
          success: {
             access,
             refresh,
-            user: omit(user.toJSON(), ["banTill", "password", "createdAt", "updatedAt", "strikes"]),
+            user: omit(user.toJSON(), ["banTill", "password", "createdAt", "updatedAt", "strikes", "userType"]),
          },
       });
    } catch (e) {
