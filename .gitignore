@@ -5,3 +5,5 @@ dist
 .vscode
 
 # heroku ignores
+Commits.md
+README.md
