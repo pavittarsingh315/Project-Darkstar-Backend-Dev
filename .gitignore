@@ -3,3 +3,8 @@ node_modules
 dist
 .env
 .vscode
+
+# heroku ignores
+Commits.md
+README.md
+tsconfig.json
