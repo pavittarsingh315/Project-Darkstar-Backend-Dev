@@ -7,4 +7,3 @@ dist
 # heroku ignores
 Commits.md
 README.md
-tsconfig.json
