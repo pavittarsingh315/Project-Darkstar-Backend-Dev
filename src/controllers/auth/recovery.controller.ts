@@ -37,6 +37,26 @@ export async function requestPasswordReset(req: Request, res: Response) {
    }
 }
 
+export async function confirmResetCode(req: Request, res: Response) {
+   try {
+      if (!req.body.code || !req.body.contact) return res.status(400).json({ error: { msg: "Please include all fields." } }); // prettier-ignore
+      req.body.contact = req.body.contact.replace(/\s+/g, "").toLowerCase();
+      req.body.code = Number(req.body.code);
+      const { code, contact }: { code: number; contact: string } = req.body;
+
+      const tempObj = await TemporaryObject.findOne({ contact });
+      if(!tempObj) return res.status(400).json({ error: { msg: "Code has expired. Request another password reset." } }); // prettier-ignore
+
+      if (tempObj.verification_code !== code) return res.status(400).json({ error: { msg: "Incorrect Code." } });
+
+      return res.status(200).json({ success: { msg: "Code matches." } });
+   } catch (e) {
+      let err = <Error>e;
+      log.error(err.message);
+      return res.status(500).json({ error: { msg: err.message } });
+   }
+}
+
 export async function confirmPasswordReset(req: Request, res: Response) {
    try {
       if (!req.body.code|| !req.body.contact || !req.body.password) return res.status(400).json({ error: { msg: "Please include all fields." } }); // prettier-ignore

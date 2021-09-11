@@ -1,7 +1,7 @@
 import express, { Router } from "express";
 import { initiateRegistration, finializeRegistration } from "../controllers/auth/registration.controller";
 import { login, tokenLogin } from "../controllers/auth/login.controller";
-import { requestPasswordReset, confirmPasswordReset } from "../controllers/auth/recovery.controller";
+import { requestPasswordReset, confirmResetCode, confirmPasswordReset } from "../controllers/auth/recovery.controller";
 
 const router: Router = express.Router();
 
@@ -36,7 +36,7 @@ const router: Router = express.Router();
  *         type: string
  *     responses:
  *       200:
- *         description: Temporary object has been created and email or text has been sent, depending on what the contact was, with a verification code inside. This code is used in the finalizeRegistration route.
+ *         description: Returns success object containing a message. Temporary object has been created and email or text has been sent, depending on what the contact was, with a verification code inside. This code is used in the finalizeRegistration route.
  *       400:
  *         description: A bad request was sent. Read the return for more details.
  *       500:
@@ -74,13 +74,13 @@ router.post("/initiateRegistration", initiateRegistration);
  *         required: true
  *         type: string
  *       - name: password
- *         description: The password of the registerer.
+ *         description: The password of the registerer. Same value as the one from initiateRegistration.
  *         in: formData
  *         required: true
  *         type: string
  *     responses:
  *       201:
- *         description: User has been successfully created. The user object and auth tokens are sent back.
+ *         description: Returns a success object with auth tokens and the user object.
  *       400:
  *         description: A bad request was sent. Read the return for more details.
  *       500:
@@ -109,7 +109,7 @@ router.post("/finalizeRegistration", finializeRegistration);
  *         type: string
  *     responses:
  *       200:
- *         description: Login successfully. An access and refresh token are received along with the instance of the user.
+ *         description: Returns a success object with auth tokens and the user object.
  *       400:
  *         description: A bad request was sent. Read the return for more details.
  *       500:
@@ -138,7 +138,7 @@ router.post("/login", login);
  *         type: string
  *     responses:
  *       200:
- *         description: Login successfully. An access and refresh token are received along with the instance of the user.
+ *         description: Returns a success object with auth tokens and the user object.
  *       400:
  *         description: A bad request was sent. Read the return for more details.
  *       500:
@@ -162,7 +162,7 @@ router.post("/tokenLogin", tokenLogin);
  *         type: string
  *     responses:
  *       200:
- *         description: Request successfully processed and recovery code has been sent.
+ *         description: Returns a success object containing a message.
  *       400:
  *         description: A bad request was sent. Read the return for more details.
  *       500:
@@ -173,7 +173,36 @@ router.post("/passwordreset/request", requestPasswordReset);
 /**
  * @swagger
  *
- * /api/auth/passwordreset/confirm:
+ * /api/auth/passwordreset/confirmCode:
+ *   post:
+ *     description: Verify the user's ownership of the contact by comparing the code received with the one if our records.
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: contact
+ *         description: The email or phone number that the user signed up with. This is used to find the user's account.
+ *         in: formData
+ *         required: true
+ *         type: string
+ *       - name: code
+ *         description: The recovery code received when requesting the password reset.
+ *         in: formData
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Returns a success object containing a message.
+ *       400:
+ *         description: A bad request was sent. Read the return for more details.
+ *       500:
+ *          description: Server error
+ */
+router.post("/passwordreset/confirmCode", confirmResetCode);
+
+/**
+ * @swagger
+ *
+ * /api/auth/passwordreset/confirmReset:
  *   post:
  *     description: Takes the recovery code sent during the reset request and the new password to update the user's password.
  *     produces:
@@ -196,12 +225,12 @@ router.post("/passwordreset/request", requestPasswordReset);
  *         type: string
  *     responses:
  *       200:
- *         description: Password has been successfully updated.
+ *         description: Returns a success object containing a message.
  *       400:
  *         description: A bad request was sent. Read the return for more details.
  *       500:
  *          description: Server error
  */
-router.post("/passwordreset/confirm", confirmPasswordReset);
+router.post("/passwordreset/confirmReset", confirmPasswordReset);
 
 export default router;

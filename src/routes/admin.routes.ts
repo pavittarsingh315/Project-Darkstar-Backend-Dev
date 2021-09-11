@@ -21,7 +21,7 @@ const router: Router = express.Router();
  *         type: string
  *     responses:
  *       200:
- *         description: User has been ban.
+ *         description: Returns a success object containing a message. User has been ban.
  *       400:
  *         description: A bad request was sent. Read the return for more details.
  *       500:
@@ -46,7 +46,7 @@ router.post("/ban/:id", staffPermissionHandler, banUser);
  *         type: string
  *     responses:
  *       200:
- *         description: User has been deleted.
+ *         description: Returns a success object containing a message. User has been deleted.
  *       400:
  *         description: A bad request was sent. Read the return for more details.
  *       500:

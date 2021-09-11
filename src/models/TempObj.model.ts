@@ -23,7 +23,7 @@ const TemporaryObjectSchema = new mongoose.Schema(
       expires_at: {
          type: Date,
          default: Date.now,
-         expires: 120, // # of seconds
+         expires: 300, // # of seconds
       },
    },
    { timestamps: false }

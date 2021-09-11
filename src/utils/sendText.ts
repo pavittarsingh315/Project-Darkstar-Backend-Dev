@@ -8,7 +8,7 @@ const client = twilio(accountSid, authToken);
 export async function SendRegistrationText(code: number, toNumber: string) {
    try {
       const msg = {
-         body: `Here is your Darkstar verification code: ${code}. Code expires in 2 minutes!`,
+         body: `Here is your Darkstar verification code: ${code}. Code expires in 5 minutes!`,
          from: fromNumber,
          to: toNumber,
       };
@@ -23,7 +23,7 @@ export async function SendRegistrationText(code: number, toNumber: string) {
 export async function SendPasswordResetText(code: number, toNumber: string) {
    try {
       const msg = {
-         body: `Here is your Darkstar password reset code: ${code}. Code expires in 2 minutes!`,
+         body: `Here is your Darkstar password reset code: ${code}. Code expires in 5 minutes!`,
          from: fromNumber,
          to: toNumber,
       };
