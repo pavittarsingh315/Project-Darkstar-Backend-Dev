@@ -9,6 +9,7 @@ export interface UserInterface extends mongoose.Document {
    userType: string;
    strikes: number;
    banTill: Date | null;
+   lastLogin: Date;
    createdAt: Date;
    updatedAt: Date;
 }
@@ -22,6 +23,7 @@ const UserSchema = new mongoose.Schema(
       },
       contact: {
          type: String,
+         immutable: true,
          unique: true,
          required: true,
          lowercase: true,
@@ -54,6 +56,10 @@ const UserSchema = new mongoose.Schema(
       banTill: {
          type: Date,
          default: null,
+      },
+      lastLogin: {
+         type: Date,
+         default: Date.now(),
       },
    },
    { timestamps: true }

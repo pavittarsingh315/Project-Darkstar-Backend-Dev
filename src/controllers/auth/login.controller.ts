@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import User, { UserInterface } from "../../models/User.model";
+import Profile, { ProfileInterface } from "../../models/Profile.model";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import log from "../../logger";
@@ -24,12 +25,20 @@ export async function login(req: Request, res: Response) {
             const timeTillUnBan = millisecondsToTimeLeft(banTimeInString - timeNowInString);
             return res.status(400).json({ error: { msg: `You are banned for ${timeTillUnBan}.` } });
          } else if (timeNowInString > banTimeInString) {
-            await user.updateOne({ banTill: null });
+            user.banTill = null;
+            await user.save();
          }
       }
 
       const passwordMatches = await bcrypt.compare(password, user.password);
       if (!passwordMatches) return res.status(400).json({ error: { msg: "Incorrect password." } });
+
+      const profileExists = await Profile.findOne({ userId: user._id }).select(["-followers", "-following", "-privateFollowing", "-whitelist"]); // prettier-ignore
+      if (!profileExists) return res.status(400).json({ error: { msg: "Profile not found." } });
+      const profile = <ProfileInterface>profileExists;
+
+      user.lastLogin = new Date(new Date().getTime());
+      await user.save();
 
       const accessSecret = <string>process.env.ACCESS_TOKEN_SECRET;
       const refreshSecret = <string>process.env.REFRESH_TOKEN_SECRET;
@@ -40,7 +49,8 @@ export async function login(req: Request, res: Response) {
          success: {
             access,
             refresh,
-            user: omit(user.toJSON(), ["banTill", "password", "createdAt", "updatedAt", "strikes", "userType"]),
+            profile: omit(profile.toJSON(), ["userId", "username", "name", "createdAt", "updatedAt", "__v"]),
+            user: omit(user.toJSON(), ["banTill", "password", "strikes", "userType", "lastLogin", "createdAt", "updatedAt", "__v"]), // prettier-ignore
          },
       });
    } catch (e) {
@@ -77,15 +87,24 @@ export async function tokenLogin(req: Request, res: Response) {
             const timeTillUnBan = millisecondsToTimeLeft(banTimeInString - timeNowInString);
             return res.status(400).json({ error: { msg: `You are banned for ${timeTillUnBan}.` } });
          } else if (timeNowInString > banTimeInString) {
-            await user.updateOne({ banTill: null });
+            user.banTill = null;
+            await user.save();
          }
       }
+
+      const profileExists = await Profile.findOne({ userId: user._id }).select(["-followers", "-following", "-privateFollowing", "-whitelist"]); // prettier-ignore
+      if (!profileExists) return res.status(400).json({ error: { msg: "Profile not found." } });
+      const profile = <ProfileInterface>profileExists;
+
+      user.lastLogin = new Date(new Date().getTime());
+      await user.save();
 
       return res.status(200).json({
          success: {
             access,
             refresh,
-            user: omit(user.toJSON(), ["banTill", "password", "createdAt", "updatedAt", "strikes", "userType"]),
+            profile: omit(profile.toJSON(), ["userId", "username", "name", "createdAt", "updatedAt", "__v"]),
+            user: omit(user.toJSON(), ["banTill", "password", "strikes", "userType", "lastLogin", "createdAt", "updatedAt", "__v"]), // prettier-ignore
          },
       });
    } catch (e) {

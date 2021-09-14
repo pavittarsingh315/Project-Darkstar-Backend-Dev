@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import User from "../../models/User.model";
+import Profile from "../../models/Profile.model";
 import TemporaryObject from "../../models/TempObj.model";
 import ValidateEmail from "../../utils/emailValidator";
 import jwt from "jsonwebtoken";
@@ -24,7 +25,7 @@ export async function initiateRegistration(req: Request, res: Response) {
       if (usernameTaken) return res.status(400).json({ error: { msg: "Username taken" } });
 
       const registrationAlreadyInitialized = await TemporaryObject.findOne({ contact: contact });
-      if (registrationAlreadyInitialized) return res.status(400).json({ error: { msg: "Registration process already started." } }); // prettier-ignore
+      if (registrationAlreadyInitialized) return res.status(400).json({ error: { msg: "Registration process already started. Try again in a few minutes." } }); // prettier-ignore
 
       const contactIsEmail = ValidateEmail(contact);
       const contactTaken = await User.findOne({ contact: contact });
@@ -72,6 +73,10 @@ export async function finializeRegistration(req: Request, res: Response) {
       const savedUser = await newUser.save();
       if (!savedUser) throw Error("Something went wrong.");
 
+      const newProfile = new Profile({ userId: savedUser._id, username: savedUser.username, name: savedUser.name });
+      const savedProfile = await newProfile.save();
+      if (!savedProfile) throw Error("Something went wrong.");
+
       await tempObj.deleteOne();
 
       const accessSecret = <string>process.env.ACCESS_TOKEN_SECRET;
@@ -83,7 +88,8 @@ export async function finializeRegistration(req: Request, res: Response) {
          success: {
             access,
             refresh,
-            user: omit(savedUser.toJSON(), ["banTill", "password", "createdAt", "updatedAt", "strikes", "userType"]),
+            profile: omit(savedProfile.toJSON(), ["userId", "username", "name", "followers", "following", "privateFollowing", "whitelist", "createdAt", "updatedAt", "__v"]), // prettier-ignore
+            user: omit(savedUser.toJSON(), ["banTill", "password", "strikes", "userType", "lastLogin", "createdAt", "updatedAt", "__v"]), // prettier-ignore
          },
       });
    } catch (e) {

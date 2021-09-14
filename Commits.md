@@ -102,3 +102,11 @@
 1. Made the expiration time of temp objects 5 minutes rather than 2 minutes.
 2. Created another route for password reset where the verification code is verified to be correct. This is cause I split the reset process into 3 parts: send contact, confirm code, change password.
 3. Updated the documentation.
+
+## Nineteenth Commit
+
+1. Changed all the .update() functions to use the .save() syntax instead.
+2. Added a check to see if a reset process is already started.
+3. Added a last login field to the User schema and made all fields on the Temp schema immutable(read-only).
+4. Created a Profile schema.
+5. Changed the register route to create and send a profile obj. Changed the login route to send the profile obj.

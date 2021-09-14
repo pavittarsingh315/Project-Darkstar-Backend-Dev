@@ -12,7 +12,9 @@ export async function requestPasswordReset(req: Request, res: Response) {
       if (!req.body.contact) return res.status(400).json({ error: { msg: "Please include all fields." } });
       req.body.contact = req.body.contact.replace(/\s+/g, "").toLowerCase();
       const { contact }: { contact: string } = req.body;
-      const isEmail = ValidateEmail(contact);
+
+      const resetAlreadyStarted = await TemporaryObject.findOne({ contact: contact });
+      if (resetAlreadyStarted) return res.status(400).json({ error: { msg: "Reset process already started. Try again in a few minutes." } }); // prettier-ignore
 
       const userExists = await User.findOne({ contact });
       if (!userExists) return res.status(400).json({ error: { msg: "Account not found." } });
@@ -23,6 +25,7 @@ export async function requestPasswordReset(req: Request, res: Response) {
       const savedTempObj = await newTempObj.save();
       if (!savedTempObj) throw Error("Something went wrong.");
 
+      const isEmail = ValidateEmail(contact);
       if (isEmail) {
          await SendPasswordResetMail(user.contact, verification_code);
          return res.status(200).json({ success: { msg: "An email as been sent with a verification code." } });

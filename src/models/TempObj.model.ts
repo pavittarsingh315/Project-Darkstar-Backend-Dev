@@ -11,6 +11,7 @@ const TemporaryObjectSchema = new mongoose.Schema(
       verification_code: {
          type: Number,
          required: true,
+         immutable: true,
       },
       contact: {
          type: String,
@@ -18,10 +19,12 @@ const TemporaryObjectSchema = new mongoose.Schema(
          required: true,
          lowercase: true,
          trim: true,
+         immutable: true,
          max: [50, "Contact too long."],
       },
       expires_at: {
          type: Date,
+         immutable: true,
          default: Date.now,
          expires: 300, // # of seconds
       },

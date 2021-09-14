@@ -19,17 +19,23 @@ export async function banUser(req: Request, res: Response) {
       switch (user.strikes) {
          case 0:
             const oneDayBan = new Date(new Date().getTime() + 24 * 3600 * 1000); // 24 * 3600 * 1000 = 1 day in milliseconds
-            await user.updateOne({ strikes: 1, banTill: oneDayBan });
+            user.strikes = 1;
+            user.banTill = oneDayBan;
+            await user.save();
             banLength = "one day";
             break;
          case 1:
             const oneWeekBan = new Date(new Date().getTime() + 7 * 24 * 3600 * 1000); // 7 * 24 * 3600 * 1000 = 1 week in milliseconds
-            await user.updateOne({ strikes: 2, banTill: oneWeekBan });
+            user.strikes = 2;
+            user.banTill = oneWeekBan;
+            await user.save();
             banLength = "one week";
             break;
          case 2:
             const oneMonthBan = new Date(new Date().getTime() + 30 * 24 * 3600 * 1000); // 30 * 24 * 3600 * 1000 = 1 month in milliseconds
-            await user.updateOne({ strikes: 3, banTill: oneMonthBan });
+            user.strikes = 3;
+            user.banTill = oneMonthBan;
+            await user.save();
             banLength = "one month";
             break;
          case 3:
