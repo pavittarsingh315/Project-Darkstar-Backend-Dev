@@ -37,7 +37,7 @@ const ProfileSchema = new mongoose.Schema(
       },
       portrait: {
          type: String,
-         default: "Change this to the default portait",
+         default: "https://nerajima.s3.us-west-1.amazonaws.com/default.png",
       },
       bio: {
          type: String,

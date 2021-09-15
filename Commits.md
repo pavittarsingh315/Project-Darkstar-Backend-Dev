@@ -110,3 +110,11 @@
 3. Added a last login field to the User schema and made all fields on the Temp schema immutable(read-only).
 4. Created a Profile schema.
 5. Changed the register route to create and send a profile obj. Changed the login route to send the profile obj.
+
+## Twentieth Commit
+
+1. Created an AWS bucket and IAM user with correct permissions to create and delete objects. Objects are readable by anyone.
+2. Integrated AWS into the logic.
+3. Created routes for getting a secure url to upload a object to aws and for deleting objects.
+4. Created a user auth middleware to require jwt and deny access otherwise or if expired.
+5. Made it so we check if the jwt is for a user that even exists in the middlewares.

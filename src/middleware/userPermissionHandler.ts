@@ -5,20 +5,21 @@ import TokenInterface from "../interfaces/tokens";
 import log from "../logger";
 
 export interface RequestInterface extends Request {
-   user_type?: string;
+   user_id?: string;
 }
 
-async function staffPermissionHandler(req: RequestInterface, res: Response, next: NextFunction) {
+async function userPermissionHandler(req: RequestInterface, res: Response, next: NextFunction) {
    try {
-      if(!req.header("Authorization")) return res.status(400).json({ error: { msg: "No authorization token found." } }) // prettier-ignore
+      if(!req.header("Authorization")) return res.status(400).json({ error: { msg: "Could not authorize action." } }) // prettier-ignore
       const token = <string>req.header("Authorization")?.split(" ")[1];
       const accessSecret = <string>process.env.ACCESS_TOKEN_SECRET;
-      const decoded = <TokenInterface>(<unknown>jwt.verify(token, accessSecret));
+      const decoded = <TokenInterface>(<unknown>jwt.verify(token, accessSecret, { ignoreExpiration: true }));
 
-      if (decoded.user_type === "staff" || decoded.user_type === "admin" || decoded.user_type === "superuser") {
+      if (Date.now() < decoded.exp * 1000) {
+         // if token hasn't expired
          const user = await User.findOne({ _id: decoded.userId });
          if (!user) return res.status(403).json({ error: { msg: "User does not exist." } });
-         req.user_type = decoded.user_type;
+         req.user_id = user._id;
          next();
       } else {
          return res.status(403).json({ error: { msg: "Permission denied." } });
@@ -32,4 +33,4 @@ async function staffPermissionHandler(req: RequestInterface, res: Response, next
    }
 }
 
-export default staffPermissionHandler;
+export default userPermissionHandler;
