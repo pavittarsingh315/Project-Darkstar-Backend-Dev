@@ -11,14 +11,15 @@ export interface RequestInterface extends Request {
 async function userPermissionHandler(req: RequestInterface, res: Response, next: NextFunction) {
    try {
       if(!req.header("Authorization")) return res.status(400).json({ error: { msg: "Could not authorize action." } }) // prettier-ignore
+      if (!req.body.userId) return res.status(400).json({ error: { msg: "Id not found." } });
       const token = <string>req.header("Authorization")?.split(" ")[1];
       const accessSecret = <string>process.env.ACCESS_TOKEN_SECRET;
       const decoded = <TokenInterface>(<unknown>jwt.verify(token, accessSecret, { ignoreExpiration: true }));
 
       if (Date.now() < decoded.exp * 1000) {
-         // if token hasn't expired
+         if (decoded.userId != req.body.userId) return res.status(403).json({ error: { msg: "Invalid id." } });
          const user = await User.findOne({ _id: decoded.userId });
-         if (!user) return res.status(403).json({ error: { msg: "User does not exist." } });
+         if (!user) return res.status(403).json({ error: { msg: "Invalid token." } });
          req.user_id = user._id;
          next();
       } else {

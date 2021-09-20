@@ -124,3 +124,8 @@
 1. AWS presigned url makes it so images are uploaded into a profilePics folder.
 2. Got rid of return user obj on login and registration. Now just returning the profile.
 3. Gave the name property in both user and profile schemas a max length of thirty.
+
+## Twenty-second Commit
+
+1. Made routes to update username, name, and bio.
+2. Editted the user permission middleware to now require the req.body to have a user id and have it match the one inside the token payload.
