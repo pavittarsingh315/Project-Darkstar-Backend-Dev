@@ -49,8 +49,7 @@ export async function login(req: Request, res: Response) {
          success: {
             access,
             refresh,
-            profile: omit(profile.toJSON(), ["userId", "username", "name", "createdAt", "updatedAt", "__v"]),
-            user: omit(user.toJSON(), ["banTill", "password", "strikes", "userType", "lastLogin", "createdAt", "updatedAt", "__v"]), // prettier-ignore
+            profile: omit(profile.toJSON(), ["createdAt", "updatedAt", "__v"]),
          },
       });
    } catch (e) {
@@ -103,8 +102,7 @@ export async function tokenLogin(req: Request, res: Response) {
          success: {
             access,
             refresh,
-            profile: omit(profile.toJSON(), ["userId", "username", "name", "createdAt", "updatedAt", "__v"]),
-            user: omit(user.toJSON(), ["banTill", "password", "strikes", "userType", "lastLogin", "createdAt", "updatedAt", "__v"]), // prettier-ignore
+            profile: omit(profile.toJSON(), ["createdAt", "updatedAt", "__v"]),
          },
       });
    } catch (e) {

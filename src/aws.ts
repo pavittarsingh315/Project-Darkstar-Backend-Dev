@@ -25,7 +25,7 @@ export async function generateUploadUrl() {
 
       const params = {
          Bucket: bucketName,
-         Key: imgName,
+         Key: `profilePics/${imgName}`, // `postPics/${imgName}` for postPics
          Expires: 60,
       };
 

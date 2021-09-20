@@ -33,7 +33,7 @@ const ProfileSchema = new mongoose.Schema(
       name: {
          type: String,
          trim: true,
-         required: true,
+         max: [30, "Name too long."],
       },
       portrait: {
          type: String,
@@ -42,8 +42,8 @@ const ProfileSchema = new mongoose.Schema(
       bio: {
          type: String,
          trim: true,
-         maxLength: 500,
-         default: "😀",
+         maxLength: 225,
+         default: "🚀🚀🚀🚀🚀🚀🚀🚀",
       },
       followers: {
          type: Array,

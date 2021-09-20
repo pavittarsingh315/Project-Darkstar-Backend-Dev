@@ -7,7 +7,7 @@ export async function getUploadUrl(req: RequestInterface, res: Response) {
    try {
       const url = await generateUploadUrl();
       const imgUrl = url.split("?")[0];
-      const imgName = url.split("/")[3].split("?")[0];
+      const imgName = `profilePics/${url.split("/")[4].split("?")[0]}`;
       return res.status(200).json({ success: { url, imgUrl, imgName } });
    } catch (e) {
       let err = <Error>e;

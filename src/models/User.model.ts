@@ -20,6 +20,7 @@ const UserSchema = new mongoose.Schema(
          type: String,
          trim: true,
          required: true,
+         max: [30, "Name too long."],
       },
       contact: {
          type: String,

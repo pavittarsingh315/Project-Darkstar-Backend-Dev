@@ -18,6 +18,7 @@ export async function initiateRegistration(req: Request, res: Response) {
 
       if (username.length < 6) return res.status(400).json({ error: { msg: "Username too short." } });
       if (username.length > 30) return res.status(400).json({ error: { msg: "Username too long." } });
+      if (name.length > 30) return res.status(400).json({ error: { msg: "Name too long." } });
       if (contact.length > 50) return res.status(400).json({ error: { msg: "Contact too long." } });
       if (password.length < 10) return res.status(400).json({ error: { msg: "Password too short." } });
 
@@ -88,8 +89,7 @@ export async function finializeRegistration(req: Request, res: Response) {
          success: {
             access,
             refresh,
-            profile: omit(savedProfile.toJSON(), ["userId", "username", "name", "followers", "following", "privateFollowing", "whitelist", "createdAt", "updatedAt", "__v"]), // prettier-ignore
-            user: omit(savedUser.toJSON(), ["banTill", "password", "strikes", "userType", "lastLogin", "createdAt", "updatedAt", "__v"]), // prettier-ignore
+            profile: omit(savedProfile.toJSON(), ["followers", "following", "privateFollowing", "whitelist", "createdAt", "updatedAt", "__v"]), // prettier-ignore
          },
       });
    } catch (e) {

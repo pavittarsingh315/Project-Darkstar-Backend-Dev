@@ -118,3 +118,9 @@
 3. Created routes for getting a secure url to upload a object to aws and for deleting objects.
 4. Created a user auth middleware to require jwt and deny access otherwise or if expired.
 5. Made it so we check if the jwt is for a user that even exists in the middlewares.
+
+## Twenty-first Commit
+
+1. AWS presigned url makes it so images are uploaded into a profilePics folder.
+2. Got rid of return user obj on login and registration. Now just returning the profile.
+3. Gave the name property in both user and profile schemas a max length of thirty.
