@@ -62,6 +62,8 @@ export async function login(req: Request, res: Response) {
 export async function tokenLogin(req: Request, res: Response) {
    try {
       if (!req.body.access || !req.body.refresh) return res.status(400).json({ error: { msg: "Please include all fields." } }); // prettier-ignore
+      req.body.access = req.body.access.split(" ")[1];
+      req.body.refresh = req.body.refresh.split(" ")[1];
       let { access, refresh }: { access: string; refresh: string } = req.body;
 
       const accessSecret = <string>process.env.ACCESS_TOKEN_SECRET;
