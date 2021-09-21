@@ -129,3 +129,9 @@
 
 1. Made routes to update username, name, and bio.
 2. Editted the user permission middleware to now require the req.body to have a user id and have it match the one inside the token payload.
+
+## Twenty-third Commit
+
+1. Made route to updadte profile portrait url and delete old imgs from s3.
+2. Removed delete s3 object route.
+3. Made all edit routes put methods and made getting presigned url a post method.

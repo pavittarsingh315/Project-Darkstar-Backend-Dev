@@ -2,6 +2,7 @@ import { Response } from "express";
 import { RequestInterface } from "../../middleware/userPermissionHandler";
 import User, { UserInterface } from "../../models/User.model";
 import Profile, { ProfileInterface } from "../../models/Profile.model";
+import { deleteObject } from "../../aws";
 import log from "../../logger";
 
 export async function editUsername(req: RequestInterface, res: Response) {
@@ -84,6 +85,34 @@ export async function editBio(req: RequestInterface, res: Response) {
       log.error(err.message);
       if (err.message.substring(0, 23) === "Cast to ObjectId failed")
          return res.status(400).json({ error: { msg: "Could not update your bio." } });
+      return res.status(500).json({ error: { msg: err.message } });
+   }
+}
+
+export async function editProfilePortrait(req: RequestInterface, res: Response) {
+   try {
+      if(!req.body.oldPortrait || !req.body.newPortrait) return res.status(400).json({ error: { msg: "Please include all fields." } }); // prettier-ignore
+      const { oldPortrait, newPortrait }: { oldPortrait: string; newPortrait: string } = req.body;
+
+      if (oldPortrait !== "https://nerajima.s3.us-west-1.amazonaws.com/default.png") {
+         const imgName = oldPortrait.split("?")[0].split("/")[6];
+         await deleteObject(`resized/postPics/200x200/${imgName}`);
+         await deleteObject(`resized/postPics/1000x1000/${imgName}`);
+      }
+
+      const profileExists = await Profile.findOne({ userId: req.user_id }).select(["-followers", "-following", "-privateFollowing", "-whitelist"]); // prettier-ignore
+      if (!profileExists) return res.status(400).json({ error: { msg: "Could not find your profile." } });
+      const profile = <ProfileInterface>profileExists;
+
+      profile.portrait = newPortrait;
+      await profile.save();
+
+      return res.status(200).json({ success: { msg: "Portrait updated." } });
+   } catch (e) {
+      let err = <Error>e;
+      log.error(err.message);
+      if (err.message.substring(0, 23) === "Cast to ObjectId failed")
+         return res.status(400).json({ error: { msg: "Could not update your portrait." } });
       return res.status(500).json({ error: { msg: err.message } });
    }
 }

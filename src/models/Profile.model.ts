@@ -4,7 +4,7 @@ export interface ProfileInterface extends mongoose.Document {
    userId: string;
    username: string;
    name: string;
-   portait: string;
+   portrait: string;
    bio: string;
    followers: Array<string>;
    following: Array<string>;
