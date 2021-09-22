@@ -96,8 +96,8 @@ export async function editProfilePortrait(req: RequestInterface, res: Response) 
 
       if (oldPortrait !== "https://nerajima.s3.us-west-1.amazonaws.com/default.png") {
          const imgName = oldPortrait.split("?")[0].split("/")[6];
-         await deleteObject(`resized/postPics/200x200/${imgName}`);
-         await deleteObject(`resized/postPics/1000x1000/${imgName}`);
+         await deleteObject(`resized/profilePics/200x200/${imgName}`);
+         await deleteObject(`resized/profilePics/1000x1000/${imgName}`);
       }
 
       const profileExists = await Profile.findOne({ userId: req.user_id }).select(["-followers", "-following", "-privateFollowing", "-whitelist"]); // prettier-ignore
