@@ -6,9 +6,7 @@ export interface ProfileInterface extends mongoose.Document {
    name: string;
    portrait: string;
    bio: string;
-   followers: Array<string>;
-   following: Array<string>;
-   privateFollowing: Array<string>;
+   blacklistMsg: string;
    whitelist: Array<string>;
    numFollowers: number;
    numFollowing: number;
@@ -42,20 +40,14 @@ const ProfileSchema = new mongoose.Schema(
       bio: {
          type: String,
          trim: true,
-         maxLength: 225,
+         maxLength: 150,
          default: "🚀🚀🚀🚀🚀🚀🚀🚀",
       },
-      followers: {
-         type: Array,
-         default: [],
-      },
-      following: {
-         type: Array,
-         default: [],
-      },
-      privateFollowing: {
-         type: Array,
-         default: [],
+      blacklistMsg: {
+         type: String,
+         default: "",
+         trim: true,
+         maxLength: 100,
       },
       whitelist: {
          type: Array,
@@ -76,24 +68,6 @@ const ProfileSchema = new mongoose.Schema(
    },
    { timestamps: true }
 );
-
-ProfileSchema.pre("save", async function (next: mongoose.HookNextFunction) {
-   const profile = <ProfileInterface>this;
-
-   if (profile.isModified("followers")) {
-      profile.numFollowers = profile.followers.length;
-   }
-
-   if (profile.isModified("following")) {
-      profile.numFollowing = profile.following.length;
-   }
-
-   if (profile.isModified("privateFollowing")) {
-      profile.numPrivateFollowing = profile.privateFollowing.length;
-   }
-
-   return next();
-});
 
 const db = mongoose.connection.useDb("Profiles");
 const Profile = db.model<ProfileInterface>("Profile", ProfileSchema);

@@ -135,3 +135,14 @@
 1. Made route to updadte profile portrait url and delete old imgs from s3.
 2. Removed delete s3 object route.
 3. Made all edit routes put methods and made getting presigned url a post method.
+
+## Twenty-fourth Commit
+
+1. Removed the followers, following, and privatelyFollowing arrays from profile schema and all the cases where we omit these fields.
+2. Made it so staff middleware now requires userId as well.
+3. Made it so user middleware now appends entire user obj and profile obj into the request.
+4. Created a new blacklistMsg field in profile model and created a function to edit it.
+5. Made it so a profile obj and its profile pics are deleted when their owner i.e. user is deleted.
+6. Created a new Follows schema to basically cover all aspects of user relationships.
+7. Added functionality for following, unfollowing, and privately following a user.
+8. Refactored the edit profile controller functions to use the profile and user objs that the user middleware appended on the request object.

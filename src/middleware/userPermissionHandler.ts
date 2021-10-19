@@ -1,11 +1,13 @@
 import { Request, Response, NextFunction } from "express";
-import User from "../models/User.model";
+import User, { UserInterface } from "../models/User.model";
+import Profile, { ProfileInterface } from "../models/Profile.model";
 import jwt from "jsonwebtoken";
 import TokenInterface from "../interfaces/tokens";
 import log from "../logger";
 
 export interface RequestInterface extends Request {
-   user_id?: string;
+   user?: UserInterface;
+   profile?: ProfileInterface;
 }
 
 async function userPermissionHandler(req: RequestInterface, res: Response, next: NextFunction) {
@@ -20,7 +22,10 @@ async function userPermissionHandler(req: RequestInterface, res: Response, next:
          if (decoded.userId != req.body.userId) return res.status(403).json({ error: { msg: "Invalid id." } });
          const user = await User.findOne({ _id: decoded.userId });
          if (!user) return res.status(403).json({ error: { msg: "Invalid token." } });
-         req.user_id = user._id;
+         const profile = await Profile.findOne({ userId: user._id }).select(["-whitelist"]); // prettier-ignore
+         if (!profile) return res.status(403).json({ error: { msg: "Invalid token." } });
+         req.user = user;
+         req.profile = profile;
          next();
       } else {
          return res.status(403).json({ error: { msg: "Permission denied." } });

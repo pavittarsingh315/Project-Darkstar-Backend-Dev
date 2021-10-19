@@ -89,7 +89,7 @@ export async function finializeRegistration(req: Request, res: Response) {
          success: {
             access,
             refresh,
-            profile: omit(savedProfile.toJSON(), ["followers", "following", "privateFollowing", "whitelist", "createdAt", "updatedAt", "__v"]), // prettier-ignore
+            profile: omit(savedProfile.toJSON(), ["whitelist", "createdAt", "updatedAt", "__v"]), // prettier-ignore
          },
       });
    } catch (e) {

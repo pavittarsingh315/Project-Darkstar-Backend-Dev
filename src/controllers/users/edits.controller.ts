@@ -1,7 +1,6 @@
 import { Response } from "express";
 import { RequestInterface } from "../../middleware/userPermissionHandler";
-import User, { UserInterface } from "../../models/User.model";
-import Profile, { ProfileInterface } from "../../models/Profile.model";
+import User from "../../models/User.model";
 import { deleteObject } from "../../aws";
 import log from "../../logger";
 
@@ -17,25 +16,15 @@ export async function editUsername(req: RequestInterface, res: Response) {
       const usernameTaken = await User.findOne({ username });
       if (usernameTaken) return res.status(400).json({ error: { msg: "Username taken" } });
 
-      const userExists = await User.findOne({ _id: req.user_id });
-      if (!userExists) return res.status(400).json({ error: { msg: "Could not find your account." } });
-      const user = <UserInterface>userExists;
-
-      const profileExists = await Profile.findOne({ userId: req.user_id }).select(["-followers", "-following", "-privateFollowing", "-whitelist"]); // prettier-ignore
-      if (!profileExists) return res.status(400).json({ error: { msg: "Could not find your profile." } });
-      const profile = <ProfileInterface>profileExists;
-
-      user.username = username;
-      profile.username = username;
-      await user.save();
-      await profile.save();
+      req.user!.username = username;
+      req.profile!.username = username;
+      await req.user!.save();
+      await req.profile!.save();
 
       return res.status(200).json({ success: { msg: "Username updated." } });
    } catch (e) {
       let err = <Error>e;
       log.error(err.message);
-      if (err.message.substring(0, 23) === "Cast to ObjectId failed")
-         return res.status(400).json({ error: { msg: "Could not update your username." } });
       return res.status(500).json({ error: { msg: err.message } });
    }
 }
@@ -47,19 +36,13 @@ export async function editName(req: RequestInterface, res: Response) {
 
       if (name.length > 30) return res.status(400).json({ error: { msg: "Name too long." } });
 
-      const profileExists = await Profile.findOne({ userId: req.user_id }).select(["-followers", "-following", "-privateFollowing", "-whitelist"]); // prettier-ignore
-      if (!profileExists) return res.status(400).json({ error: { msg: "Could not find your profile." } });
-      const profile = <ProfileInterface>profileExists;
-
-      profile.name = name;
-      await profile.save();
+      req.profile!.name = name;
+      await req.profile!.save();
 
       return res.status(200).json({ success: { msg: "Name updated." } });
    } catch (e) {
       let err = <Error>e;
       log.error(err.message);
-      if (err.message.substring(0, 23) === "Cast to ObjectId failed")
-         return res.status(400).json({ error: { msg: "Could not update your name." } });
       return res.status(500).json({ error: { msg: err.message } });
    }
 }
@@ -69,22 +52,16 @@ export async function editBio(req: RequestInterface, res: Response) {
       if (!req.body.bio) req.body.bio = "";
       const { bio }: { bio: string } = req.body;
 
-      if (bio.length > 225) return res.status(400).json({ error: { msg: "Bio too long." } });
+      if (bio.length > 150) return res.status(400).json({ error: { msg: "Bio too long." } });
       if(bio.split("\n").length > 5) return res.status(400).json({ error: { msg: "Line limit exceeded." } }); // prettier-ignore
 
-      const profileExists = await Profile.findOne({ userId: req.user_id }).select(["-followers", "-following", "-privateFollowing", "-whitelist"]); // prettier-ignore
-      if (!profileExists) return res.status(400).json({ error: { msg: "Could not find your profile." } });
-      const profile = <ProfileInterface>profileExists;
-
-      profile.bio = bio;
-      await profile.save();
+      req.profile!.bio = bio;
+      await req.profile!.save();
 
       return res.status(200).json({ success: { msg: "Bio updated." } });
    } catch (e) {
       let err = <Error>e;
       log.error(err.message);
-      if (err.message.substring(0, 23) === "Cast to ObjectId failed")
-         return res.status(400).json({ error: { msg: "Could not update your bio." } });
       return res.status(500).json({ error: { msg: err.message } });
    }
 }
@@ -100,19 +77,32 @@ export async function editProfilePortrait(req: RequestInterface, res: Response) 
          await deleteObject(`resized/profilePics/1000x1000/${imgName}`);
       }
 
-      const profileExists = await Profile.findOne({ userId: req.user_id }).select(["-followers", "-following", "-privateFollowing", "-whitelist"]); // prettier-ignore
-      if (!profileExists) return res.status(400).json({ error: { msg: "Could not find your profile." } });
-      const profile = <ProfileInterface>profileExists;
-
-      profile.portrait = newPortrait;
-      await profile.save();
+      req.profile!.portrait = newPortrait;
+      await req.profile!.save();
 
       return res.status(200).json({ success: { msg: "Portrait updated." } });
    } catch (e) {
       let err = <Error>e;
       log.error(err.message);
-      if (err.message.substring(0, 23) === "Cast to ObjectId failed")
-         return res.status(400).json({ error: { msg: "Could not update your portrait." } });
+      return res.status(500).json({ error: { msg: err.message } });
+   }
+}
+
+export async function editBlacklistMsg(req: RequestInterface, res: Response) {
+   try {
+      if (!req.body.newMsg) req.body.newMsg = "";
+      const { newMsg }: { newMsg: string } = req.body;
+
+      if (newMsg.length > 100) return res.status(400).json({ error: { msg: "Message is too long." } });
+      if(newMsg.split("\n").length > 5) return res.status(400).json({ error: { msg: "Line limit exceeded." } }); // prettier-ignore
+
+      req.profile!.blacklistMsg = newMsg;
+      await req.profile!.save();
+
+      return res.status(200).json({ success: { msg: "Message updated." } });
+   } catch (e) {
+      let err = <Error>e;
+      log.error(err.message);
       return res.status(500).json({ error: { msg: err.message } });
    }
 }

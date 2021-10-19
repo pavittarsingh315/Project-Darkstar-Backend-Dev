@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import Profile from "./Profile.model";
+import { deleteObject } from "../aws";
 
 export interface UserInterface extends mongoose.Document {
    name: string;
@@ -78,6 +80,20 @@ UserSchema.pre("save", async function (next: mongoose.HookNextFunction) {
    user.password = hash;
 
    return next();
+});
+
+UserSchema.pre("deleteOne", { document: true, query: false }, async function (next: mongoose.HookNextFunction) {
+   const profile = await Profile.findOne({ userId: this._id });
+
+   if (profile?.portrait !== "https://nerajima.s3.us-west-1.amazonaws.com/default.png") {
+      const imgName = profile?.portrait.split("?")[0].split("/")[6];
+      await deleteObject(`resized/profilePics/200x200/${imgName}`);
+      await deleteObject(`resized/profilePics/1000x1000/${imgName}`);
+   }
+
+   await profile?.deleteOne();
+
+   next();
 });
 
 const db = mongoose.connection.useDb("Authentication");

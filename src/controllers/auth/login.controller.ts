@@ -33,7 +33,7 @@ export async function login(req: Request, res: Response) {
       const passwordMatches = await bcrypt.compare(password, user.password);
       if (!passwordMatches) return res.status(400).json({ error: { msg: "Incorrect password." } });
 
-      const profileExists = await Profile.findOne({ userId: user._id }).select(["-followers", "-following", "-privateFollowing", "-whitelist"]); // prettier-ignore
+      const profileExists = await Profile.findOne({ userId: user._id }).select(["-whitelist"]); // prettier-ignore
       if (!profileExists) return res.status(400).json({ error: { msg: "Profile not found." } });
       const profile = <ProfileInterface>profileExists;
 
@@ -93,7 +93,7 @@ export async function tokenLogin(req: Request, res: Response) {
          }
       }
 
-      const profileExists = await Profile.findOne({ userId: user._id }).select(["-followers", "-following", "-privateFollowing", "-whitelist"]); // prettier-ignore
+      const profileExists = await Profile.findOne({ userId: user._id }).select(["-whitelist"]); // prettier-ignore
       if (!profileExists) return res.status(400).json({ error: { msg: "Profile not found." } });
       const profile = <ProfileInterface>profileExists;
 
