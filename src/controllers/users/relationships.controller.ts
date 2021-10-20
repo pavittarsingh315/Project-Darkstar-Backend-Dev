@@ -82,3 +82,64 @@ export async function unfollowUser(req: RequestInterface, res: Response) {
       return res.status(500).json({ error: { msg: err.message } });
    }
 }
+
+export async function getProfileFollowers(req: RequestInterface, res: Response) {
+   try {
+      const profileId = req.params.id;
+      const profile = await Profile.findById(profileId);
+      if (!profile) return res.status(400).json({ error: { msg: "Could not get followers." } });
+
+      let followersId: Array<{ followerId: string }> = [];
+      if (profileId == req.profile!._id) {
+         const allFollowers = await Follows.find({ followedId: profileId }).select(["followerId", "-_id"]); // prettier-ignore
+         followersId = allFollowers;
+      } else {
+         const allFollowers = await Follows.find({ followedId: profileId, isPrivateFollow: false }).select(["followerId", "-_id"]); // prettier-ignore
+         followersId = allFollowers;
+      }
+
+      let followers: Array<{ portrait: string; username: string; name: string }> = [];
+      if (followersId.length) {
+         followers = await Profile.find({ _id: { $in: followersId.map((e) => e.followerId) } }).select(["portrait", "username", "name"]); // prettier-ignore
+      }
+
+      return res.status(200).json({ success: { followers } });
+   } catch (e) {
+      let err = <Error>e;
+      log.error(err.message);
+      if (err.message.substring(0, 23) === "Cast to ObjectId failed")
+         return res.status(400).json({ error: { msg: "Could not get followers." } });
+      return res.status(500).json({ error: { msg: err.message } });
+   }
+}
+
+export async function getProfileFollowing(req: RequestInterface, res: Response) {
+   try {
+      const profileId = req.params.id;
+      const privately = <string>(<unknown>req.query.privately);
+      if (privately !== "true" && privately !== "false") return res.status(400).json({ error: { msg: "Could not get following." } }); //prettier-ignore
+
+      const profile = await Profile.findById(profileId);
+      if (!profile) return res.status(400).json({ error: { msg: "Could not get following." } });
+
+      let followingId: Array<{ followedId: string }> = [];
+      if (privately === "true") {
+         followingId = await Follows.find({ followerId: profileId, isPrivateFollow: true }).select(["followedId", "-_id"]); // prettier-ignore
+      } else {
+         followingId = await Follows.find({ followerId: profileId, isPrivateFollow: false }).select(["followedId", "-_id"]); // prettier-ignore
+      }
+
+      let following: Array<{ portrait: string; username: string; name: string }> = [];
+      if (followingId.length) {
+         following = await Profile.find({ _id: { $in: followingId.map((e) => e.followedId) } }).select(["portrait", "username", "name"]); // prettier-ignore
+      }
+
+      return res.status(200).json({ success: { following } });
+   } catch (e) {
+      let err = <Error>e;
+      log.error(err.message);
+      if (err.message.substring(0, 23) === "Cast to ObjectId failed")
+         return res.status(400).json({ error: { msg: "Could not get following." } });
+      return res.status(500).json({ error: { msg: err.message } });
+   }
+}

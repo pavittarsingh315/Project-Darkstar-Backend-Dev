@@ -7,7 +7,13 @@ import {
    editProfilePortrait,
    editBlacklistMsg,
 } from "../controllers/users/edits.controller";
-import { followUser, unfollowUser } from "../controllers/users/users.controllers";
+import {
+   followUser,
+   unfollowUser,
+   getProfileFollowers,
+   getProfileFollowing,
+} from "../controllers/users/relationships.controller";
+import { searchUser } from "../controllers/users/profiles.controller";
 
 const router: Router = express.Router();
 
@@ -19,5 +25,9 @@ router.put("/editBlacklistMsg", userPermissionHandler, editBlacklistMsg);
 
 router.put("/profile/follow/:id", userPermissionHandler, followUser);
 router.put("/profile/unfollow/:id", userPermissionHandler, unfollowUser);
+router.post("/profile/followers/:id", userPermissionHandler, getProfileFollowers);
+router.post("/profile/following/:id", userPermissionHandler, getProfileFollowing);
+
+router.post("/profile/search/:username", userPermissionHandler, searchUser);
 
 export default router;

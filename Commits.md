@@ -146,3 +146,8 @@
 6. Created a new Follows schema to basically cover all aspects of user relationships.
 7. Added functionality for following, unfollowing, and privately following a user.
 8. Refactored the edit profile controller functions to use the profile and user objs that the user middleware appended on the request object.
+
+## Twenty-fifth Commit
+
+1. Added functionality to get a user's followers, following, and private following.
+2. Added functionality to search for a user in an autocomplete type of way.
