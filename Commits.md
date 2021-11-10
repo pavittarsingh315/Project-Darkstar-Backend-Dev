@@ -151,3 +151,7 @@
 
 1. Added functionality to get a user's followers, following, and private following.
 2. Added functionality to search for a user in an autocomplete type of way.
+
+## Twenty-sixth Commit
+
+1. Created a route to get a user's profile and if you're following them or not.

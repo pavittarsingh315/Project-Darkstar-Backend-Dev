@@ -13,7 +13,7 @@ import {
    getProfileFollowers,
    getProfileFollowing,
 } from "../controllers/users/relationships.controller";
-import { searchUser } from "../controllers/users/profiles.controller";
+import { searchUser, getUserProfile } from "../controllers/users/profiles.controller";
 
 const router: Router = express.Router();
 
@@ -29,5 +29,6 @@ router.post("/profile/followers/:id", userPermissionHandler, getProfileFollowers
 router.post("/profile/following/:id", userPermissionHandler, getProfileFollowing);
 
 router.post("/profile/search/:username", userPermissionHandler, searchUser);
+router.post("/profile/:userId", userPermissionHandler, getUserProfile);
 
 export default router;
