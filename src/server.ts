@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
 
-const port = <number>(<unknown>process.env.PORT) || 5000;
+const port = <number>(<unknown>process.env.PORT) || 4000;
 const envState = <string>process.env.NODE_ENV;
 
 if (envState === "production") {

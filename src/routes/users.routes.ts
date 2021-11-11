@@ -13,7 +13,13 @@ import {
    getProfileFollowers,
    getProfileFollowing,
 } from "../controllers/users/relationships.controller";
-import { searchUser, getUserProfile } from "../controllers/users/profiles.controller";
+import {
+   makeSearch,
+   getUserProfile,
+   getUserSearches,
+   removeSearch,
+   removeAllSearches,
+} from "../controllers/users/profiles.controller";
 
 const router: Router = express.Router();
 
@@ -28,7 +34,10 @@ router.put("/profile/unfollow/:id", userPermissionHandler, unfollowUser);
 router.post("/profile/followers/:id", userPermissionHandler, getProfileFollowers);
 router.post("/profile/following/:id", userPermissionHandler, getProfileFollowing);
 
-router.post("/profile/search/:username", userPermissionHandler, searchUser);
+router.post("/profile/search/:query", userPermissionHandler, makeSearch);
 router.post("/profile/:userId", userPermissionHandler, getUserProfile);
+router.post("/profile/searches/history", userPermissionHandler, getUserSearches);
+router.post("/profile/searches/remove/:index", userPermissionHandler, removeSearch);
+router.post("/profile/searches/removeAll", userPermissionHandler, removeAllSearches);
 
 export default router;
