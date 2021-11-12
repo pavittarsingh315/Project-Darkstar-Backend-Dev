@@ -32,7 +32,7 @@ router.post("/ban/:id", staffPermissionHandler, banUser);
 /**
  * @swagger
  * /api/admin/delete/{userId}:
- *   post:
+ *   delete:
  *     security:
  *       - auth: []
  *     description: Delete a user using by their document id.
@@ -52,6 +52,6 @@ router.post("/ban/:id", staffPermissionHandler, banUser);
  *       500:
  *          description: Server error
  */
-router.post("/delete/:id", staffPermissionHandler, deleteUser);
+router.delete("/delete/:id", staffPermissionHandler, deleteUser);
 
 export default router;

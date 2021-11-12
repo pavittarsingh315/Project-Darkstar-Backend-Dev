@@ -161,3 +161,8 @@
 1. Changed the port of the dev server.
 2. Changed the searchUser route into a more generically named makeSearch route cause I plan on making searches for other stuff too like posts.
 3. Created a searches schema which holds the last 10 searches from a user. All the routes have been setup.
+
+## Twenty-eight Commit
+
+1. Made the userId part of the Authorization header in order to remove it from the bodies of all protected routes.
+2. Changed all the routes to their appropriate http method type.

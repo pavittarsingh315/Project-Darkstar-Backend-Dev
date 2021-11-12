@@ -31,13 +31,13 @@ router.put("/editBlacklistMsg", userPermissionHandler, editBlacklistMsg);
 
 router.put("/profile/follow/:id", userPermissionHandler, followUser);
 router.put("/profile/unfollow/:id", userPermissionHandler, unfollowUser);
-router.post("/profile/followers/:id", userPermissionHandler, getProfileFollowers);
-router.post("/profile/following/:id", userPermissionHandler, getProfileFollowing);
+router.get("/profile/followers/:id", userPermissionHandler, getProfileFollowers);
+router.get("/profile/following/:id", userPermissionHandler, getProfileFollowing);
 
-router.post("/profile/search/:query", userPermissionHandler, makeSearch);
-router.post("/profile/:userId", userPermissionHandler, getUserProfile);
-router.post("/profile/searches/history", userPermissionHandler, getUserSearches);
-router.post("/profile/searches/remove/:index", userPermissionHandler, removeSearch);
-router.post("/profile/searches/removeAll", userPermissionHandler, removeAllSearches);
+router.get("/profile/search/:query", userPermissionHandler, makeSearch);
+router.get("/profile/:userId", userPermissionHandler, getUserProfile);
+router.get("/profile/searches/history", userPermissionHandler, getUserSearches);
+router.put("/profile/searches/remove/:index", userPermissionHandler, removeSearch);
+router.put("/profile/searches/removeAll", userPermissionHandler, removeAllSearches);
 
 export default router;

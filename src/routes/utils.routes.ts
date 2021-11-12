@@ -4,6 +4,6 @@ import userPermissionHandler from "../middleware/userPermissionHandler";
 
 const router: Router = express.Router();
 
-router.post("/getUploadUrl", userPermissionHandler, getUploadUrl);
+router.get("/getUploadUrl", userPermissionHandler, getUploadUrl);
 
 export default router;
