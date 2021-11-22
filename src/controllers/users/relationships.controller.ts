@@ -73,7 +73,7 @@ export async function unfollowUser(req: RequestInterface, res: Response) {
       await req.profile!.save();
       await followsObj.deleteOne();
 
-      return res.status(200).json({ success: { msg: "User unfollowed." } });
+      return res.status(200).json({ success: { wasPrivateFollow: isPrivateFollow } });
    } catch (e) {
       let err = <Error>e;
       log.error(err.message);

@@ -11,25 +11,6 @@ export async function makeSearch(req: RequestInterface, res: Response) {
       const searchResults = await Profile.find({
          username: { $regex: `^${req.params.query}`, $options: "i" },
       }).select(["username", "portrait", "name"]);
-      const searches = await Searches.findOne({ userId: req.profile!._id });
-      if (!searches) {
-         const newSearches = new Searches({
-            userId: req.profile!._id,
-            queries: [`${req.params.query}`],
-         });
-         await newSearches.save();
-      } else {
-         let prevSearches = searches.queries;
-         if (prevSearches.includes(req.params.query)) {
-            prevSearches.splice(prevSearches.indexOf(req.params.query), 1);
-         }
-         prevSearches = [...[`${req.params.query}`], ...prevSearches];
-         if (prevSearches.length > 10) {
-            prevSearches.pop();
-         }
-         searches.queries = prevSearches;
-         await searches.save();
-      }
       return res.status(200).json({ success: { searchResults } });
    } catch (e) {
       let err = <Error>e;
@@ -49,9 +30,15 @@ export async function getUserProfile(req: RequestInterface, res: Response) {
       ]);
       if (!profile) return res.status(400).json({ error: { msg: "Could not retrieve profile." } });
       const areFollowing = await Follows.findOne({ followedId: profile._id, followerId: req.profile!._id });
-      return res
-         .status(200)
-         .json({ success: { profile: merge(profile.toJSON(), { areFollowing: areFollowing ? true : false }) } });
+      return res.status(200).json({
+         success: {
+            profile: merge(
+               profile.toJSON(),
+               { areFollowing: areFollowing ? true : false },
+               { profileIsMine: profile._id.equals(req.profile!._id) }
+            ),
+         },
+      });
    } catch (e) {
       let err = <Error>e;
       log.error(err.message);
@@ -96,6 +83,35 @@ export async function removeAllSearches(req: RequestInterface, res: Response) {
       searches.queries = [];
       await searches.save();
       return res.status(200).json({ success: { msg: "Done" } });
+   } catch (e) {
+      let err = <Error>e;
+      log.error(err.message);
+      return res.status(500).json({ error: { msg: err.message } });
+   }
+}
+
+export async function addRecentSearch(req: RequestInterface, res: Response) {
+   try {
+      const searches = await Searches.findOne({ userId: req.profile!._id });
+      if (!searches) {
+         const newSearches = new Searches({
+            userId: req.profile!._id,
+            queries: [`${req.params.query}`],
+         });
+         await newSearches.save();
+      } else {
+         let prevSearches = searches.queries;
+         if (prevSearches.includes(req.params.query)) {
+            prevSearches.splice(prevSearches.indexOf(req.params.query), 1);
+         }
+         prevSearches = [...[`${req.params.query}`], ...prevSearches];
+         if (prevSearches.length > 10) {
+            prevSearches.pop();
+         }
+         searches.queries = prevSearches;
+         await searches.save();
+      }
+      return res.status(200).json({ success: { msg: "Search added." } });
    } catch (e) {
       let err = <Error>e;
       log.error(err.message);

@@ -166,3 +166,9 @@
 
 1. Made the userId part of the Authorization header in order to remove it from the bodies of all protected routes.
 2. Changed all the routes to their appropriate http method type.
+
+## Twenty-ninth Commit
+
+1. Created a separate route to add to the recent searches of a user.
+2. When searching a profile, it now also returns if we are the owner of the profile.
+3. When you unfollow, it returns whether you were privately or publicly following them.

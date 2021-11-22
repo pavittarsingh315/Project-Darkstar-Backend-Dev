@@ -17,6 +17,7 @@ import {
    makeSearch,
    getUserProfile,
    getUserSearches,
+   addRecentSearch,
    removeSearch,
    removeAllSearches,
 } from "../controllers/users/profiles.controller";
@@ -37,6 +38,7 @@ router.get("/profile/following/:id", userPermissionHandler, getProfileFollowing)
 router.get("/profile/search/:query", userPermissionHandler, makeSearch);
 router.get("/profile/:userId", userPermissionHandler, getUserProfile);
 router.get("/profile/searches/history", userPermissionHandler, getUserSearches);
+router.put("/profile/searches/add/:query", userPermissionHandler, addRecentSearch);
 router.put("/profile/searches/remove/:index", userPermissionHandler, removeSearch);
 router.put("/profile/searches/removeAll", userPermissionHandler, removeAllSearches);
 
