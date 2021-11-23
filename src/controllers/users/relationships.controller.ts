@@ -124,6 +124,7 @@ export async function getProfileFollowing(req: RequestInterface, res: Response) 
 
       let followingId: Array<{ followedId: string }> = [];
       if (privately === "true") {
+         if(!profile._id.equals(req.profile!._id)) return res.status(400).json({ error: { msg: "You can only view your private following." } }); // prettier-ignore
          followingId = await Follows.find({ followerId: profileId, isPrivateFollow: true }).select(["followedId", "-_id"]); // prettier-ignore
       } else {
          followingId = await Follows.find({ followerId: profileId, isPrivateFollow: false }).select(["followedId", "-_id"]); // prettier-ignore

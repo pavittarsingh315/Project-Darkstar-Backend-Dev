@@ -8,7 +8,7 @@ export async function getUploadUrl(req: RequestInterface, res: Response) {
       const url = await generateUploadUrl();
       const imgUrl1 = url.split("?")[0].split("/");
       imgUrl1.splice(3, 0, "resized");
-      imgUrl1.splice(5, 0, "1000x1000");
+      imgUrl1.splice(5, 0, "300x300");
       const imgUrl = imgUrl1.toString().replace(/,/g, "/");
 
       return res.status(200).json({ success: { url, imgUrl } });
