@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { RequestInterface } from "../../middleware/userPermissionHandler";
 import User from "../../models/User.model";
+import Whitelist from "../../models/Whitelist.models";
 import { deleteObject } from "../../aws";
 import log from "../../logger";
 
@@ -95,8 +96,10 @@ export async function editBlacklistMsg(req: RequestInterface, res: Response) {
       if (newMsg.length > 100) return res.status(400).json({ error: { msg: "Message is too long." } });
       if(newMsg.split("\n").length > 5) return res.status(400).json({ error: { msg: "Line limit exceeded." } }); // prettier-ignore
 
-      req.profile!.blacklistMsg = newMsg;
-      await req.profile!.save();
+      const whitelist = await Whitelist.findOne({ profileId: req.profile!._id });
+      if (!whitelist) return res.status(400).json({ error: { msg: "Could not update blacklist message." } });
+      whitelist.blacklistMsg = newMsg;
+      await whitelist.save();
 
       return res.status(200).json({ success: { msg: "Message updated." } });
    } catch (e) {

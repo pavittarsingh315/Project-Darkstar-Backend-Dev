@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 
 export interface SearchInterface extends mongoose.Document {
-   userId: string;
+   profileId: string;
    queries: Array<string>;
 }
 
 const SearchSchema = new mongoose.Schema(
    {
-      userId: {
+      profileId: {
          type: String,
          unique: true,
          required: true,

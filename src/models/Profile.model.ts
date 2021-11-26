@@ -6,8 +6,6 @@ export interface ProfileInterface extends mongoose.Document {
    name: string;
    portrait: string;
    bio: string;
-   blacklistMsg: string;
-   whitelist: Array<string>;
    numFollowers: number;
    numFollowing: number;
    numPrivateFollowing: number;
@@ -42,16 +40,6 @@ const ProfileSchema = new mongoose.Schema(
          trim: true,
          maxLength: 150,
          default: "🚀🚀🚀🚀🚀🚀🚀🚀",
-      },
-      blacklistMsg: {
-         type: String,
-         default: "",
-         trim: true,
-         maxLength: 100,
-      },
-      whitelist: {
-         type: Array,
-         default: [],
       },
       numFollowers: {
          type: Number,

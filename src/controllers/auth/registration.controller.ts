@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import User from "../../models/User.model";
 import Profile from "../../models/Profile.model";
 import TemporaryObject from "../../models/TempObj.model";
+import Whitelist from "../../models/Whitelist.models";
 import ValidateEmail from "../../utils/emailValidator";
 import jwt from "jsonwebtoken";
 import { SendRegistrationMail } from "../../utils/sendEmail";
@@ -78,6 +79,9 @@ export async function finializeRegistration(req: Request, res: Response) {
       const savedProfile = await newProfile.save();
       if (!savedProfile) throw Error("Something went wrong.");
 
+      const newWhitelist = new Whitelist({ profileId: savedProfile._id });
+      await newWhitelist.save();
+
       await tempObj.deleteOne();
 
       const accessSecret = <string>process.env.ACCESS_TOKEN_SECRET;
@@ -89,7 +93,7 @@ export async function finializeRegistration(req: Request, res: Response) {
          success: {
             access,
             refresh,
-            profile: omit(savedProfile.toJSON(), ["whitelist", "createdAt", "updatedAt", "__v"]), // prettier-ignore
+            profile: omit(savedProfile.toJSON(), ["createdAt", "updatedAt", "__v"]),
          },
       });
    } catch (e) {

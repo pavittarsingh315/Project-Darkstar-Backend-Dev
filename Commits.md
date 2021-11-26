@@ -172,3 +172,11 @@
 1. Created a separate route to add to the recent searches of a user.
 2. When searching a profile, it now also returns if we are the owner of the profile.
 3. When you unfollow, it returns whether you were privately or publicly following them.
+
+## Thirtieth Commit
+
+1. Removed blacklistMsg and whitelist from Profile Schema and into a new Schema called whitelist.
+2. Updated login routes to include blacklistMsg from new schema and register route to create whitelist object.
+3. Updated editBlacklistMsg to work properly with new Schema.
+4. Created routes for adding and removing users from whitelist.
+5. Changed all the "userId" to "profileId" where it was indeed the profileId just to avoid mix ups in the future.

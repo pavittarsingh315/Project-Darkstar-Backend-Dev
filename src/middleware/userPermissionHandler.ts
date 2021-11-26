@@ -23,7 +23,7 @@ async function userPermissionHandler(req: RequestInterface, res: Response, next:
          if (decoded.userId != headerUserId) return res.status(403).json({ error: { msg: "Invalid id." } });
          const user = await User.findOne({ _id: decoded.userId });
          if (!user) return res.status(403).json({ error: { msg: "Invalid token." } });
-         const profile = await Profile.findOne({ userId: user._id }).select(["-whitelist"]); // prettier-ignore
+         const profile = await Profile.findOne({ userId: user._id });
          if (!profile) return res.status(403).json({ error: { msg: "Invalid token." } });
          req.user = user;
          req.profile = profile;
