@@ -186,3 +186,8 @@
 1. Put blacklistMsg back into the Profile Schema and refactored the Whitelist Schema.
 2. Added functionality to remove a follower.
 3. Added ability to leave someone's whitelist and get your own whitelist.
+
+## Thirty-second Commit
+
+1. Removed leaveWhitelist route. Instead made it so when you unfollow a user, you leave they're whitelist.
+2. Added functionality to tell if we're whitelisted to a profile when getting it.

@@ -24,7 +24,6 @@ import {
    addToWhitelist,
    removeFromWhitelist,
    getWhitelist,
-   leaveWhitelist,
 } from "../controllers/users/profiles.controller";
 
 const router: Router = express.Router();
@@ -41,15 +40,16 @@ router.put("/profile/followers/remove/:id", userPermissionHandler, removeFollowe
 router.get("/profile/followers/:id", userPermissionHandler, getProfileFollowers);
 router.get("/profile/following/:id", userPermissionHandler, getProfileFollowing);
 
-router.get("/profile/search/:query", userPermissionHandler, makeSearch);
 router.get("/profile/:profileId", userPermissionHandler, getUserProfile);
+
+router.get("/profile/search/:query", userPermissionHandler, makeSearch);
 router.get("/profile/searches/history", userPermissionHandler, getUserSearches);
 router.put("/profile/searches/add/:query", userPermissionHandler, addRecentSearch);
 router.put("/profile/searches/remove/:index", userPermissionHandler, removeSearch);
 router.put("/profile/searches/removeAll", userPermissionHandler, removeAllSearches);
+
 router.put("/profile/whitelist/add/:profileId", userPermissionHandler, addToWhitelist);
 router.put("/profile/whitelist/remove/:profileId", userPermissionHandler, removeFromWhitelist);
 router.get("/profile/whitelist/get", userPermissionHandler, getWhitelist);
-router.put("/profile/whitelist/leave/:profileId", userPermissionHandler, leaveWhitelist);
 
 export default router;

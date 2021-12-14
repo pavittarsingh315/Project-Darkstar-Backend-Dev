@@ -2,6 +2,7 @@ import { Response } from "express";
 import { RequestInterface } from "../../middleware/userPermissionHandler";
 import Follows from "../../models/Followers.model";
 import Profile from "../../models/Profile.model";
+import Whitelist from "../../models/Whitelist.model";
 import log from "../../logger";
 
 export async function followUser(req: RequestInterface, res: Response) {
@@ -61,6 +62,11 @@ export async function unfollowUser(req: RequestInterface, res: Response) {
 
       const toBeUnfollowedProfile = await Profile.findById(toBeUnfollowedId);
       if (!toBeUnfollowedProfile) return res.status(400).json({ error: { msg: "Could not follow user." } });
+
+      const whitelistObj = await Whitelist.findOne({ ownerId: toBeUnfollowedProfile._id, allowedId: req.profile!._id });
+      if (whitelistObj) {
+         await whitelistObj.deleteOne();
+      }
 
       toBeUnfollowedProfile.numFollowers -= 1;
       if (isPrivateFollow) {

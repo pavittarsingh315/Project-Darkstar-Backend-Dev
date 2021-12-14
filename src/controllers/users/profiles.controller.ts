@@ -30,12 +30,15 @@ export async function getUserProfile(req: RequestInterface, res: Response) {
       ]);
       if (!profile) return res.status(400).json({ error: { msg: "Could not retrieve profile." } });
       const areFollowing = await Follows.findOne({ followedId: profile._id, followerId: req.profile!._id });
+      const areWhitelisted = await Whitelist.findOne({ ownerId: profile._id, allowedId: req.profile!._id });
+      const profileIsMine = profile._id.equals(req.profile!._id);
       return res.status(200).json({
          success: {
             profile: merge(
                profile.toJSON(),
                { areFollowing: areFollowing ? true : false },
-               { profileIsMine: profile._id.equals(req.profile!._id) }
+               { areWhitelisted: areWhitelisted || profileIsMine ? true : false },
+               { profileIsMine }
             ),
          },
       });
@@ -127,13 +130,16 @@ export async function addToWhitelist(req: RequestInterface, res: Response) {
       const alreadyWhitelisted = await Whitelist.findOne({ ownerId: req.profile!._id, allowedId: toBeAdded });
       if (alreadyWhitelisted) return res.status(400).json({ error: { msg: "User is already whitelisted." } });
 
+      const doesUserFollow = await Follows.findOne({ followedId: req.profile!._id, followerId: toBeAdded });
+      if (!doesUserFollow) return res.status(400).json({ error: { msg: "Cannot whitelist user who doesn't follow you." } }); // prettier-ignore
+
       const profileExists = await Profile.findOne({ _id: toBeAdded });
       if (!profileExists) return res.status(400).json({ error: { msg: "Could not add user to your whitelist." } });
 
       const newWhitelistObj = new Whitelist({ ownerId: req.profile!._id, allowedId: toBeAdded });
       await newWhitelistObj.save();
 
-      return res.status(200).json({ success: { msg: "User added from whitelist." } });
+      return res.status(200).json({ success: { msg: "User added to whitelist." } });
    } catch (e) {
       let err = <Error>e;
       log.error(err.message);
@@ -176,24 +182,6 @@ export async function getWhitelist(req: RequestInterface, res: Response) {
       }
 
       return res.status(200).json({ success: { whitelist } });
-   } catch (e) {
-      let err = <Error>e;
-      log.error(err.message);
-      return res.status(500).json({ error: { msg: err.message } });
-   }
-}
-
-export async function leaveWhitelist(req: RequestInterface, res: Response) {
-   try {
-      const toBeLeft = req.params.profileId;
-      if(toBeLeft == req.profile!._id) return res.status(400).json({ error: { msg: "Cannot leave your own whitelist." } }); // prettier-ignore
-
-      const whitelistObj = await Whitelist.findOne({ ownerId: toBeLeft, allowedId: req.profile!._id });
-      if(!whitelistObj) return res.status(400).json({ error: { msg: "You're not on this user's whitelist" } }); // prettier-ignore
-
-      await whitelistObj.deleteOne();
-
-      return res.status(200).json({ success: { msg: "Left whitelist." } });
    } catch (e) {
       let err = <Error>e;
       log.error(err.message);
