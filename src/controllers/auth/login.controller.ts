@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
 import User, { UserInterface } from "../../models/User.model";
 import Profile, { ProfileInterface } from "../../models/Profile.model";
-import Whitelist from "../../models/Whitelist.models";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import log from "../../logger";
-import { omit, merge } from "lodash";
+import { omit } from "lodash";
 import TokenInterface from "../../interfaces/tokens";
 import millisecondsToTimeLeft from "../../utils/msToTimeLeft";
 
@@ -38,9 +37,6 @@ export async function login(req: Request, res: Response) {
       if (!profileExists) return res.status(400).json({ error: { msg: "Profile not found." } });
       const profile = <ProfileInterface>profileExists;
 
-      const whitelist = await Whitelist.findOne({ profileId: profile._id });
-      if (!whitelist) return res.status(400).json({ error: { msg: "Whitelist not found." } });
-
       user.lastLogin = new Date(new Date().getTime());
       await user.save();
 
@@ -53,9 +49,7 @@ export async function login(req: Request, res: Response) {
          success: {
             access,
             refresh,
-            profile: merge(omit(profile.toJSON(), ["createdAt", "updatedAt", "__v"]), {
-               blacklistMsg: whitelist.blacklistMsg,
-            }),
+            profile: omit(profile.toJSON(), ["createdAt", "updatedAt", "__v"]),
          },
       });
    } catch (e) {
@@ -103,9 +97,6 @@ export async function tokenLogin(req: Request, res: Response) {
       if (!profileExists) return res.status(400).json({ error: { msg: "Profile not found." } });
       const profile = <ProfileInterface>profileExists;
 
-      const whitelist = await Whitelist.findOne({ profileId: profile._id });
-      if (!whitelist) return res.status(400).json({ error: { msg: "Whitelist not found." } });
-
       user.lastLogin = new Date(new Date().getTime());
       await user.save();
 
@@ -113,9 +104,7 @@ export async function tokenLogin(req: Request, res: Response) {
          success: {
             access,
             refresh,
-            profile: merge(omit(profile.toJSON(), ["createdAt", "updatedAt", "__v"]), {
-               blacklistMsg: whitelist.blacklistMsg,
-            }),
+            profile: omit(profile.toJSON(), ["createdAt", "updatedAt", "__v"]),
          },
       });
    } catch (e) {

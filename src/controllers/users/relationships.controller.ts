@@ -83,6 +83,39 @@ export async function unfollowUser(req: RequestInterface, res: Response) {
    }
 }
 
+export async function removeFollower(req: RequestInterface, res: Response) {
+   try {
+      const toBeRemovedId = req.params.id;
+      if(toBeRemovedId == req.profile!._id) return res.status(400).json({ error: { msg: "Cannot remove yourself." } }); // prettier-ignore
+
+      const followsObj = await Follows.findOne({ followedId: req.profile!._id, followerId: toBeRemovedId });
+      if (!followsObj) return res.status(400).json({ error: { msg: "User is not following you." } });
+      const isPrivateFollow = followsObj.isPrivateFollow;
+
+      const toBeRemovedProfile = await Profile.findById(toBeRemovedId);
+      if (!toBeRemovedProfile) return res.status(400).json({ error: { msg: "Could not remove follower." } });
+
+      req.profile!.numFollowers -= 1;
+      if (isPrivateFollow) {
+         toBeRemovedProfile.numPrivateFollowing -= 1;
+      } else {
+         toBeRemovedProfile.numFollowing -= 1;
+      }
+
+      await toBeRemovedProfile.save();
+      await req.profile!.save();
+      await followsObj.deleteOne();
+
+      return res.status(200).json({ success: { msg: "Follower removed." } });
+   } catch (e) {
+      let err = <Error>e;
+      log.error(err.message);
+      if (err.message.substring(0, 23) === "Cast to ObjectId failed")
+         return res.status(400).json({ error: { msg: "Could not remove follower." } });
+      return res.status(500).json({ error: { msg: err.message } });
+   }
+}
+
 export async function getProfileFollowers(req: RequestInterface, res: Response) {
    try {
       const profileId = req.params.id;

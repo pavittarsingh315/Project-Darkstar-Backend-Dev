@@ -1,28 +1,21 @@
 import mongoose from "mongoose";
 
 export interface WhitelistInterface extends mongoose.Document {
-   profileId: string;
-   blacklistMsg: string;
-   whitelist: Array<string>;
+   ownerId: string;
+   allowedId: string;
 }
 
 const WhitelistSchema = new mongoose.Schema(
    {
-      profileId: {
+      ownerId: {
          type: String,
-         unique: true,
          required: true,
          immutable: true,
       },
-      blacklistMsg: {
+      allowedId: {
          type: String,
-         default: "You do not have permission to view these posts!",
-         trim: true,
-         maxLength: 100,
-      },
-      whitelist: {
-         type: Array,
-         default: [],
+         required: true,
+         immutable: true,
       },
    },
    { timestamps: false }

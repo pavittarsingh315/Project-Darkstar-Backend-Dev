@@ -10,6 +10,7 @@ import {
 import {
    followUser,
    unfollowUser,
+   removeFollower,
    getProfileFollowers,
    getProfileFollowing,
 } from "../controllers/users/relationships.controller";
@@ -22,6 +23,8 @@ import {
    removeAllSearches,
    addToWhitelist,
    removeFromWhitelist,
+   getWhitelist,
+   leaveWhitelist,
 } from "../controllers/users/profiles.controller";
 
 const router: Router = express.Router();
@@ -34,6 +37,7 @@ router.put("/editBlacklistMsg", userPermissionHandler, editBlacklistMsg);
 
 router.put("/profile/follow/:id", userPermissionHandler, followUser);
 router.put("/profile/unfollow/:id", userPermissionHandler, unfollowUser);
+router.put("/profile/followers/remove/:id", userPermissionHandler, removeFollower);
 router.get("/profile/followers/:id", userPermissionHandler, getProfileFollowers);
 router.get("/profile/following/:id", userPermissionHandler, getProfileFollowing);
 
@@ -45,5 +49,7 @@ router.put("/profile/searches/remove/:index", userPermissionHandler, removeSearc
 router.put("/profile/searches/removeAll", userPermissionHandler, removeAllSearches);
 router.put("/profile/whitelist/add/:profileId", userPermissionHandler, addToWhitelist);
 router.put("/profile/whitelist/remove/:profileId", userPermissionHandler, removeFromWhitelist);
+router.get("/profile/whitelist/get", userPermissionHandler, getWhitelist);
+router.put("/profile/whitelist/leave/:profileId", userPermissionHandler, leaveWhitelist);
 
 export default router;

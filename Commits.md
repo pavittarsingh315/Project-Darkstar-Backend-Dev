@@ -180,3 +180,9 @@
 3. Updated editBlacklistMsg to work properly with new Schema.
 4. Created routes for adding and removing users from whitelist.
 5. Changed all the "userId" to "profileId" where it was indeed the profileId just to avoid mix ups in the future.
+
+## Thirty-first Commit
+
+1. Put blacklistMsg back into the Profile Schema and refactored the Whitelist Schema.
+2. Added functionality to remove a follower.
+3. Added ability to leave someone's whitelist and get your own whitelist.

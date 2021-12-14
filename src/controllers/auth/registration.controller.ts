@@ -2,13 +2,12 @@ import { Request, Response } from "express";
 import User from "../../models/User.model";
 import Profile from "../../models/Profile.model";
 import TemporaryObject from "../../models/TempObj.model";
-import Whitelist from "../../models/Whitelist.models";
 import ValidateEmail from "../../utils/emailValidator";
 import jwt from "jsonwebtoken";
 import { SendRegistrationMail } from "../../utils/sendEmail";
 import { SendRegistrationText } from "../../utils/sendText";
 import log from "../../logger";
-import { omit, merge } from "lodash";
+import { omit } from "lodash";
 
 export async function initiateRegistration(req: Request, res: Response) {
    try {
@@ -79,9 +78,6 @@ export async function finializeRegistration(req: Request, res: Response) {
       const savedProfile = await newProfile.save();
       if (!savedProfile) throw Error("Something went wrong.");
 
-      const newWhitelist = new Whitelist({ profileId: savedProfile._id });
-      await newWhitelist.save();
-
       await tempObj.deleteOne();
 
       const accessSecret = <string>process.env.ACCESS_TOKEN_SECRET;
@@ -93,9 +89,7 @@ export async function finializeRegistration(req: Request, res: Response) {
          success: {
             access,
             refresh,
-            profile: merge(omit(savedProfile.toJSON(), ["createdAt", "updatedAt", "__v"]), {
-               blacklistMsg: newWhitelist.blacklistMsg,
-            }),
+            profile: omit(savedProfile.toJSON(), ["createdAt", "updatedAt", "__v"]),
          },
       });
    } catch (e) {
