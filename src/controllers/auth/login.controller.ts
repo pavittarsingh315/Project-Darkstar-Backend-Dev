@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import User, { UserInterface } from "../../models/User.model";
 import Profile, { ProfileInterface } from "../../models/Profile.model";
+import Whitelist from "../../models/Whitelist.model";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import log from "../../logger";
-import { omit } from "lodash";
+import { omit, merge } from "lodash";
 import TokenInterface from "../../interfaces/tokens";
 import millisecondsToTimeLeft from "../../utils/msToTimeLeft";
 
@@ -45,11 +46,13 @@ export async function login(req: Request, res: Response) {
       const access = jwt.sign({ token_type: "access", userId: user._id, user_type: user.userType }, accessSecret, { expiresIn: "30d" }); // prettier-ignore
       const refresh = jwt.sign({ token_type: "refresh", userId: user._id, user_type: user.userType }, refreshSecret, { expiresIn: "2y" }); // prettier-ignore
 
+      const numWhitelisted = await Whitelist.countDocuments({ ownerId: profile._id });
+
       return res.status(200).json({
          success: {
             access,
             refresh,
-            profile: omit(profile.toJSON(), ["createdAt", "updatedAt", "__v"]),
+            profile: merge(omit(profile.toJSON(), ["createdAt", "updatedAt", "__v"]), { numWhitelisted }),
          },
       });
    } catch (e) {
@@ -97,6 +100,8 @@ export async function tokenLogin(req: Request, res: Response) {
       if (!profileExists) return res.status(400).json({ error: { msg: "Profile not found." } });
       const profile = <ProfileInterface>profileExists;
 
+      const numWhitelisted = await Whitelist.countDocuments({ ownerId: profile._id });
+
       user.lastLogin = new Date(new Date().getTime());
       await user.save();
 
@@ -104,7 +109,7 @@ export async function tokenLogin(req: Request, res: Response) {
          success: {
             access,
             refresh,
-            profile: omit(profile.toJSON(), ["createdAt", "updatedAt", "__v"]),
+            profile: merge(omit(profile.toJSON(), ["createdAt", "updatedAt", "__v"]), { numWhitelisted }),
          },
       });
    } catch (e) {

@@ -3,6 +3,7 @@ import { RequestInterface } from "../../middleware/userPermissionHandler";
 import Follows from "../../models/Followers.model";
 import Profile from "../../models/Profile.model";
 import Whitelist from "../../models/Whitelist.model";
+import FollowerInterface from "../../interfaces/followers";
 import log from "../../logger";
 
 export async function followUser(req: RequestInterface, res: Response) {
@@ -128,18 +129,32 @@ export async function getProfileFollowers(req: RequestInterface, res: Response) 
       const profile = await Profile.findById(profileId);
       if (!profile) return res.status(400).json({ error: { msg: "Could not get followers." } });
 
-      let followersId: Array<{ followerId: string }> = [];
+      let followersId: Array<{ followerId: string; isPrivateFollow: boolean }> = [];
       if (profileId == req.profile!._id) {
-         const allFollowers = await Follows.find({ followedId: profileId }).select(["followerId", "-_id"]); // prettier-ignore
+         const allFollowers = await Follows.find({ followedId: profileId }).select(["followerId", "isPrivateFollow", "-_id"]); // prettier-ignore
          followersId = allFollowers;
       } else {
-         const allFollowers = await Follows.find({ followedId: profileId, isPrivateFollow: false }).select(["followerId", "-_id"]); // prettier-ignore
+         const allFollowers = await Follows.find({ followedId: profileId, isPrivateFollow: false }).select(["followerId", "isPrivateFollow", "-_id"]); // prettier-ignore
          followersId = allFollowers;
       }
 
-      let followers: Array<{ portrait: string; username: string; name: string }> = [];
+      let followers: Array<FollowerInterface> = [];
       if (followersId.length) {
-         followers = await Profile.find({ _id: { $in: followersId.map((e) => e.followerId) } }).select(["portrait", "username", "name"]); // prettier-ignore
+         for (let i = 0; i < followersId.length; i++) {
+            let profile = await Profile.findOne({ _id: followersId[i].followerId }).select(["portrait", "username", "name", "_id"]); // prettier-ignore
+            if (profile) {
+               let isWhitelisted = await Whitelist.findOne({ownerId: req.profile!._id, allowedId: followersId[i].followerId}); // prettier-ignore
+               let followerObj: FollowerInterface = {
+                  _id: profile._id,
+                  portrait: profile.portrait,
+                  name: profile.name,
+                  username: profile.username,
+                  areWhitelisted: isWhitelisted ? true : false,
+                  isPrivateFollow: followersId[i].isPrivateFollow,
+               };
+               followers.push(followerObj);
+            }
+         }
       }
 
       return res.status(200).json({ success: { followers } });
