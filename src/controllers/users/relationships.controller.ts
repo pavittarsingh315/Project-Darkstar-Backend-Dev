@@ -102,6 +102,11 @@ export async function removeFollower(req: RequestInterface, res: Response) {
       const toBeRemovedProfile = await Profile.findById(toBeRemovedId);
       if (!toBeRemovedProfile) return res.status(400).json({ error: { msg: "Could not remove follower." } });
 
+      const whitelistObj = await Whitelist.findOne({ ownerId: req.profile!._id, allowedId: toBeRemovedProfile._id });
+      if (whitelistObj) {
+         await whitelistObj.deleteOne();
+      }
+
       req.profile!.numFollowers -= 1;
       if (isPrivateFollow) {
          toBeRemovedProfile.numPrivateFollowing -= 1;
