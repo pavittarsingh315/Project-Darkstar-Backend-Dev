@@ -51,5 +51,7 @@ router.put("/profile/searches/removeAll", userPermissionHandler, removeAllSearch
 router.put("/profile/whitelist/add/:profileId", userPermissionHandler, addToWhitelist);
 router.put("/profile/whitelist/remove/:profileId", userPermissionHandler, removeFromWhitelist);
 router.get("/profile/whitelist/get", userPermissionHandler, getWhitelist);
+// TODO implement route to refresh profile.
+// TODO update profile schema to hold two urls for the profile pic, one minified to like 100x100 and the other the larger one.
 
 export default router;
