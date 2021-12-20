@@ -73,10 +73,16 @@ export async function editProfilePortrait(req: RequestInterface, res: Response) 
 
       if (oldPortrait !== "https://nerajima.s3.us-west-1.amazonaws.com/default.png") {
          const imgName = oldPortrait.split("?")[0].split("/")[6];
-         await deleteObject(`resized/profilePics/700x700/${imgName}`);
+         await deleteObject(`resized/profilePics/100x100/${imgName}`);
+         await deleteObject(`resized/profilePics/1000x1000/${imgName}`);
       }
 
+      const miniPicUrl = newPortrait.split("/");
+      miniPicUrl.splice(5, 0, "100x100");
+      miniPicUrl.splice(6, 1);
+
       req.profile!.portrait = newPortrait;
+      req.profile!.miniPortrait = miniPicUrl.toString().replace(/,/g, "/");
       await req.profile!.save();
 
       return res.status(200).json({ success: { msg: "Portrait updated." } });

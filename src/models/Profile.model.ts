@@ -5,6 +5,7 @@ export interface ProfileInterface extends mongoose.Document {
    username: string;
    name: string;
    portrait: string;
+   miniPortrait: string;
    bio: string;
    blacklistMsg: string;
    numFollowers: number;
@@ -33,6 +34,10 @@ const ProfileSchema = new mongoose.Schema(
          max: [30, "Name too long."],
       },
       portrait: {
+         type: String,
+         default: "https://nerajima.s3.us-west-1.amazonaws.com/default.png",
+      },
+      miniPortrait: {
          type: String,
          default: "https://nerajima.s3.us-west-1.amazonaws.com/default.png",
       },

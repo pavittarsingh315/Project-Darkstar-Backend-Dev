@@ -1,6 +1,6 @@
 interface FollowerInterface {
    _id: string;
-   portrait: string;
+   miniPortrait: string;
    name: string;
    username: string;
    areWhitelisted: boolean;

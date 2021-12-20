@@ -87,7 +87,7 @@ UserSchema.pre("deleteOne", { document: true, query: false }, async function (ne
 
    if (profile?.portrait !== "https://nerajima.s3.us-west-1.amazonaws.com/default.png") {
       const imgName = profile?.portrait.split("?")[0].split("/")[6];
-      await deleteObject(`resized/profilePics/200x200/${imgName}`);
+      await deleteObject(`resized/profilePics/100x100/${imgName}`);
       await deleteObject(`resized/profilePics/1000x1000/${imgName}`);
    }
 

@@ -11,7 +11,7 @@ export async function makeSearch(req: RequestInterface, res: Response) {
    try {
       const searchResults = await Profile.find({
          username: { $regex: `^${req.params.query}`, $options: "i" },
-      }).select(["username", "portrait", "name"]);
+      }).select(["username", "miniPortrait", "name"]);
       return res.status(200).json({ success: { searchResults } });
    } catch (e) {
       let err = <Error>e;
@@ -176,9 +176,9 @@ export async function getWhitelist(req: RequestInterface, res: Response) {
          "-_id",
       ]);
 
-      let whitelist: Array<{ portrait: string; username: string; name: string }> = [];
+      let whitelist: Array<{ miniPortrait: string; username: string; name: string }> = [];
       if (whitelistId.length) {
-         whitelist = await Profile.find({ _id: { $in: whitelistId.map((e) => e.allowedId) } }).select(["portrait", "username", "name"]); // prettier-ignore
+         whitelist = await Profile.find({ _id: { $in: whitelistId.map((e) => e.allowedId) } }).select(["miniPortrait", "username", "name"]); // prettier-ignore
       }
 
       return res.status(200).json({ success: { whitelist } });

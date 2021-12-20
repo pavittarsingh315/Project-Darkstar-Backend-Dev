@@ -191,3 +191,7 @@
 
 1. Removed leaveWhitelist route. Instead made it so when you unfollow a user, you leave they're whitelist.
 2. Added functionality to tell if we're whitelisted to a profile when getting it.
+
+## Thirty-third Commit
+
+1. Created a new field on profile schema called miniPortrait which is a 100x100 version of the 1000x1000 portrait. Its used for everything except when getting a profile. Thats for the portrait to handle.
