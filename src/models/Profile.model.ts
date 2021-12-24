@@ -11,6 +11,7 @@ export interface ProfileInterface extends mongoose.Document {
    numFollowers: number;
    numFollowing: number;
    numPrivateFollowing: number;
+   numWhitelisted: number;
    createdAt: Date;
    updatedAt: Date;
 }
@@ -62,6 +63,10 @@ const ProfileSchema = new mongoose.Schema(
          default: 0,
       },
       numPrivateFollowing: {
+         type: Number,
+         default: 0,
+      },
+      numWhitelisted: {
          type: Number,
          default: 0,
       },

@@ -195,3 +195,9 @@
 ## Thirty-third Commit
 
 1. Created a new field on profile schema called miniPortrait which is a 100x100 version of the 1000x1000 portrait. Its used for everything except when getting a profile. Thats for the portrait to handle.
+
+## Thirty-fourth Commit
+
+1. Added numWhitelisted into Profile Schema and made it so when we add or remove from our whitelist, this number is incremented accordingly.
+2. Created a Post Schema and a PostReaction Schema which is used for liking and disliking a post.
+3. Created routes to get, create, edit, delete, like, dislike, unlike, and undislike a post.

@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import { SendRegistrationMail } from "../../utils/sendEmail";
 import { SendRegistrationText } from "../../utils/sendText";
 import log from "../../logger";
-import { omit, merge } from "lodash";
+import { omit } from "lodash";
 
 export async function initiateRegistration(req: Request, res: Response) {
    try {
@@ -89,7 +89,7 @@ export async function finializeRegistration(req: Request, res: Response) {
          success: {
             access,
             refresh,
-            profile: merge(omit(savedProfile.toJSON(), ["createdAt", "updatedAt", "__v"]), { numWhitelisted: 0 }),
+            profile: omit(savedProfile.toJSON(), ["createdAt", "updatedAt", "__v"]),
          },
       });
    } catch (e) {

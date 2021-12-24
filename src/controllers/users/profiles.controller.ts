@@ -23,6 +23,7 @@ export async function makeSearch(req: RequestInterface, res: Response) {
 export async function getUserProfile(req: RequestInterface, res: Response) {
    try {
       const profile = await Profile.findOne({ _id: req.params.profileId }).select([
+         "-numWhitelisted",
          "-createdAt",
          "-updatedAt",
          "-userId",
@@ -45,7 +46,7 @@ export async function getUserProfile(req: RequestInterface, res: Response) {
    } catch (e) {
       let err = <Error>e;
       log.error(err.message);
-      if (err.message.substring(0, 23) === "Cast to ObjectId failed.")
+      if (err.message.substring(0, 23) === "Cast to ObjectId failed")
          return res.status(400).json({ error: { msg: "Could not retrieve profile" } });
       return res.status(500).json({ error: { msg: err.message } });
    }
@@ -137,7 +138,10 @@ export async function addToWhitelist(req: RequestInterface, res: Response) {
       if (!profileExists) return res.status(400).json({ error: { msg: "Could not add user to your whitelist." } });
 
       const newWhitelistObj = new Whitelist({ ownerId: req.profile!._id, allowedId: toBeAdded });
+      req.profile!.numWhitelisted += 1;
+
       await newWhitelistObj.save();
+      await req.profile!.save();
 
       return res.status(200).json({ success: { msg: "User added to whitelist." } });
    } catch (e) {
@@ -157,7 +161,10 @@ export async function removeFromWhitelist(req: RequestInterface, res: Response) 
       const whitelistObj = await Whitelist.findOne({ ownerId: req.profile!._id, allowedId: toBeRemoved });
       if (!whitelistObj) return res.status(400).json({ error: { msg: "User is already not whitelisted." } });
 
+      req.profile!.numWhitelisted -= 1;
+
       await whitelistObj.deleteOne();
+      await req.profile!.save();
 
       return res.status(200).json({ success: { msg: "User removed from whitelist." } });
    } catch (e) {
