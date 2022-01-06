@@ -18,14 +18,14 @@ const s3 = new aws.S3({
    },
 });
 
-export async function generateUploadUrl() {
+export async function generateUploadUrl(directory: string) {
    try {
       const randBytes = await randomBytes(16);
       const imgName = randBytes.toString("hex");
 
       const params = {
          Bucket: bucketName,
-         Key: `profilePics/${imgName}`, // `postPics/${imgName}` for postPics
+         Key: `${directory}/${imgName}`,
          Expires: 60,
       };
 
