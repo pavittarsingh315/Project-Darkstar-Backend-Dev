@@ -12,6 +12,7 @@ export interface PostInterface extends mongoose.Document {
    numLikes: number;
    numDislikes: number;
    numComments: number;
+   numShares: number;
    createdAt: Date;
    updatedAt: Date;
 }
@@ -34,7 +35,6 @@ const PostSchema = new mongoose.Schema(
       },
       media: {
          type: String,
-         required: true,
          immutable: true,
       },
       thumbnail: {
@@ -67,6 +67,10 @@ const PostSchema = new mongoose.Schema(
          default: 0,
       },
       numComments: {
+         type: Number,
+         default: 0,
+      },
+      numShares: {
          type: Number,
          default: 0,
       },

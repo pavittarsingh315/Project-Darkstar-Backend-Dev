@@ -9,13 +9,7 @@ import log from "../../logger";
 
 export async function createPost(req: RequestInterface, res: Response) {
    try {
-      if (
-         req.body.isPrivatePost == null ||
-         !req.body.media ||
-         !req.body.thumbnail ||
-         !req.body.caption ||
-         !req.body.title
-      ) {
+      if (req.body.isPrivatePost == null || !req.body.thumbnail || !req.body.caption || !req.body.title) {
          return res.status(400).json({ error: { msg: "Please include all fields." } });
       }
 
@@ -24,7 +18,7 @@ export async function createPost(req: RequestInterface, res: Response) {
       const newPost = new Post({
          ownerId: req.profile!._id,
          isPrivatePost,
-         media,
+         media: media ? media : null,
          thumbnail,
          caption,
          title,
@@ -35,20 +29,12 @@ export async function createPost(req: RequestInterface, res: Response) {
 
       return res.status(200).json({
          success: {
-            post: merge(
-               omit(savedNewPost.toJSON(), [
-                  "isArchived",
-                  "isPrivatePost",
-                  "thumbnail",
-                  "createdAt",
-                  "updatedAt",
-                  "__v",
-               ]),
-               {
-                  ownerUsername: req.profile!.username,
-                  ownerProfilePic: req.profile!.miniPortrait,
-               }
-            ),
+            post: merge(omit(savedNewPost.toJSON(), ["isArchived", "thumbnail", "createdAt", "updatedAt", "__v"]), {
+               ownerUsername: req.profile!.username,
+               ownerProfilePic: req.profile!.miniPortrait,
+               haveLiked: false,
+               haveDisliked: false,
+            }),
          },
       });
    } catch (e) {
@@ -85,15 +71,16 @@ export async function getPost(req: RequestInterface, res: Response) {
          return res.status(400).json({ error: { msg: "Could not retrieve the owner of the post." } });
       }
 
+      const reactionObj = await PostReaction.findOne({ ownerId: req.profile!._id, postId: post._id });
+
       return res.status(200).json({
          success: {
-            post: merge(
-               omit(post.toJSON(), ["isArchived", "isPrivatePost", "thumbnail", "createdAt", "updatedAt", "__v"]),
-               {
-                  ownerUsername: postOwnerProfile.username,
-                  ownerProfilePic: postOwnerProfile.miniPortrait,
-               }
-            ),
+            post: merge(omit(post.toJSON(), ["isArchived", "thumbnail", "createdAt", "updatedAt", "__v"]), {
+               ownerUsername: postOwnerProfile.username,
+               ownerProfilePic: postOwnerProfile.miniPortrait,
+               haveLiked: reactionObj == null ? false : reactionObj!.isLike,
+               haveDisliked: reactionObj == null ? false : !reactionObj!.isLike,
+            }),
          },
       });
    } catch (e) {
