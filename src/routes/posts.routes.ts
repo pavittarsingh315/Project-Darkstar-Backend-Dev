@@ -8,6 +8,8 @@ import {
    dislikePost,
    removeLike,
    removeDislike,
+   getPostPreviews,
+   getArchivedPostPreviews,
 } from "../controllers/posts/posts.controller";
 import userPermissionHandler from "../middleware/userPermissionHandler";
 
@@ -15,6 +17,8 @@ const router: Router = express.Router();
 
 router.post("/createPost", userPermissionHandler, createPost);
 router.get("/get/:postId", userPermissionHandler, getPost);
+router.get("/archived/previews", userPermissionHandler, getArchivedPostPreviews);
+router.get("/previews/:profileId", userPermissionHandler, getPostPreviews);
 router.put("/edit/:postId", userPermissionHandler, editPost);
 router.delete("/delete/:postId", userPermissionHandler, deletePost);
 router.put("/like/:postId", userPermissionHandler, likePost);

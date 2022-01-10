@@ -272,3 +272,44 @@ export async function removeDislike(req: RequestInterface, res: Response) {
       return res.status(500).json({ error: { msg: err.message } });
    }
 }
+
+export async function getPostPreviews(req: RequestInterface, res: Response) {
+   try {
+      const privatePosts = <string>(<unknown>req.query.private);
+      if (privatePosts !== "true" && privatePosts !== "false") return res.status(400).json({ error: { msg: "Could not get posts." } }); //prettier-ignore
+
+      if (privatePosts === "true" && req.profile!._id != req.params.profileId) {
+         const isWhitelisted = await Whitelist.findOne({ ownerId: req.params.profileId, allowedId: req.profile!._id });
+         if (!isWhitelisted) return res.status(400).json({ error: { msg: "You are not whitelisted." } });
+      }
+
+      const posts = await Post.find({
+         ownerId: req.params.profileId,
+         isPrivatePost: privatePosts === "true" ? true : false,
+         isArchived: false,
+      }).select(["_id", "thumbnail"]);
+
+      return res.status(200).json({ success: { posts } });
+   } catch (e) {
+      let err = <Error>e;
+      log.error(err.message);
+      if (err.message.substring(0, 23) === "Cast to ObjectId failed")
+         return res.status(400).json({ error: { msg: "Could not get posts." } });
+      return res.status(500).json({ error: { msg: err.message } });
+   }
+}
+
+export async function getArchivedPostPreviews(req: RequestInterface, res: Response) {
+   try {
+      const posts = await Post.find({
+         ownerId: req.profile!._id,
+         isArchived: true,
+      }).select(["_id", "thumbnail", "isPrivatePost"]);
+
+      return res.status(200).json({ success: { posts } });
+   } catch (e) {
+      let err = <Error>e;
+      log.error(err.message);
+      return res.status(500).json({ error: { msg: err.message } });
+   }
+}
